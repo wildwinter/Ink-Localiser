@@ -35,8 +35,7 @@ var content = LoadInkFile("tests/test.ink");
 if (content==null)
     return -1;
 
-//InkParser parser = new InkParser("->[Test1]\n*[Test2]\n-\n->END", null, OnError);
-InkParser parser = new InkParser(content, null, OnError);
+InkParser parser = new InkParser(content, "test.ink", OnError);
 
 var parsedStory = parser.Parse();
 if (inkErrors) {
