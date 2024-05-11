@@ -6,7 +6,7 @@ namespace InkLocaliser
 {
     public class Localiser {
 
-        public struct TagInsert {
+        protected struct TagInsert {
             public Text text;
             public string locID;
         }
@@ -16,7 +16,7 @@ namespace InkLocaliser
         private bool _inkParseErrors = false;
         private HashSet<string> _filesVisited = new();
         private OrderedDictionary _strings = new();
-        private Dictionary<string, List<TagInsert>> _filesWorkToDo = new();
+        private Dictionary<string, List<TagInsert>> _filesTagsToInsert = new();
 
         public Localiser() {
         }
@@ -32,7 +32,7 @@ namespace InkLocaliser
                 if (content==null)
                     return false;
 
-                InkParser parser = new InkParser(content, System.IO.Path.GetFileNameWithoutExtension(inkFile), OnError, _fileHandler);
+                InkParser parser = new InkParser(content, inkFile, OnError, _fileHandler);
 
                 var story = parser.Parse();
                 if (_inkParseErrors) {
@@ -44,7 +44,7 @@ namespace InkLocaliser
                     return false;
             }
 
-            if (!InsertNewTags())
+            if (!InsertTagsToFiles())
                 return false;
 
             return true;
@@ -72,7 +72,7 @@ namespace InkLocaliser
                     continue;
                 }
 
-                // More than one tect chunk on a line? We only deal with individual lines of stuff.
+                // More than one text chunk on a line? We only deal with individual lines of stuff.
                 if (lastLineNumber == text.debugMetadata.startLineNumber) {
                     Console.Error.WriteLine($"Error in line {lastLineNumber} - two chunks of text when localiser can only work with one per line.");
                     return false;
@@ -99,7 +99,9 @@ namespace InkLocaliser
 
             foreach(var text in validTextObjects) {
 
-                string fileID = System.IO.Path.GetFileNameWithoutExtension(text.debugMetadata.fileName);
+                string fileName = text.debugMetadata.fileName;
+                Console.WriteLine("FILE:"+fileName);
+                string fileID = System.IO.Path.GetFileNameWithoutExtension(fileName);
                 string pathPrefix = fileID+"_";  
                 string locPrefix = MakeLocPrefix(text);
                 string uid = GenerateID();  
@@ -114,16 +116,16 @@ namespace InkLocaliser
                     Console.WriteLine("  "+locTag);
                 }
                 else {
-                    if (!_filesWorkToDo.ContainsKey(fileID))
-                        _filesWorkToDo[fileID] = new List<TagInsert>();
+
+                    if (!_filesTagsToInsert.ContainsKey(fileName))
+                        _filesTagsToInsert[fileName] = new List<TagInsert>();
                     var insert = new TagInsert
                     {
                         text = text,
                         locID = locID
                     };
-                    _filesWorkToDo[fileID].Add(insert);
+                    _filesTagsToInsert[fileName].Add(insert);
                 }
-  
 
                 _strings[locID] = text.text;
             }
@@ -131,13 +133,14 @@ namespace InkLocaliser
             return true;
         }
 
-        private bool InsertNewTags() {
+        private bool InsertTagsToFiles() {
 
-            foreach (var (fileID, workList) in _filesWorkToDo) {
+            foreach (var (fileName, workList) in _filesTagsToInsert) {
                 if (workList.Count==0)
                     continue;
                 
-                Console.WriteLine($"File: {fileID}");
+                Console.WriteLine($"File: {fileName}");
+                string content = _fileHandler.LoadInkFileContents(fileName);
                 foreach(var item in workList) {
                     Console.WriteLine($" {item.locID}: {item.text.text}");
                 }
