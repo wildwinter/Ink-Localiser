@@ -1,42 +1,54 @@
+using Ink;
 using Ink.Parsed;
 
 namespace InkLocaliser
 {
-    public class Localiser
-    {
-        private Ink.Parsed.Story _story;
+    public class Localiser {
+        private List<string> _inkFiles = new();
+        private IFileHandler _fileHandler = new DefaultFileHandler();
+        private bool _inkParseErrors = false;
 
-        public Localiser(Ink.Parsed.Story story)
-        {
-            _story = story;
+        public Localiser() {
+        }
+
+        public void AddFile(string inkFile) {
+            _inkFiles.Add(inkFile);
         }
 
         public bool Run() {
+            foreach(var inkFile in _inkFiles) {
+                
+                var content = _fileHandler.LoadInkFileContents(inkFile);
+                if (content==null)
+                    return false;
 
-            List<Text> textObjects = _story.FindAll<Text>();
+                InkParser parser = new InkParser(content, System.IO.Path.GetFileNameWithoutExtension(inkFile), OnError, _fileHandler);
+
+                var story = parser.Parse();
+                if (_inkParseErrors) {
+                    Console.Error.WriteLine($"Error parsing ink file.");
+                    return false;
+                }
+
+                if (!ProcessStory(story))
+                    return false;
+            }
+            return true;
+        }
+
+        private bool ProcessStory(Story story) {
+
+            // ---- Find all the things we should localise ----
+            List<Text> validTextObjects = new List<Text>();
             int lastLineNumber = -1;
-            foreach(var text in textObjects)
+            foreach(var text in story.FindAll<Text>())
             {
                 // Just a newline? Ignore.
                 if (text.text.Trim()=="")
                     continue;
                 
-                // Checking it's a tag. Is there a StartTag earlier in the parent content?
-                int inTag = 0;
-                foreach (var sibling in text.parent.content) {
-                    if (sibling==text) {
-                        break;
-                    }
-                    if (sibling is Tag) {
-                        var tag = (Tag)sibling;
-                        if (tag.isStart)
-                            inTag++;
-                        else
-                            inTag--;
-                    }
-                }
-
-                if (inTag>0)
+                // If it's a tag, ignore.
+                if (IsTextTag(text))
                     continue;
 
                 // Is this inside a variable assignment? In which case we can't do anything with that.
@@ -51,11 +63,119 @@ namespace InkLocaliser
                 }
                 lastLineNumber = text.debugMetadata.startLineNumber;
                     
-                Console.WriteLine("["+text.debugMetadata.startLineNumber+"] "+text.text+" - "+text.parent.parent);
-
-                
+                validTextObjects.Add(text);
             }
+
+            // ---- Sort out IDs ----
+            // Now we've got our list of text, let's iterate through looking for IDs, and create them when they're missing.
+            // IDs are stored as tags in the form #loc:file_knot_stitch_xxxx
+
+            foreach(var text in validTextObjects) {
+
+                string pathPrefix = System.IO.Path.GetFileNameWithoutExtension(text.debugMetadata.fileName)+"_";  
+                string locPrefix = MakeLocPrefix(text);
+                string uid = GenerateID();  
+                string locID = pathPrefix+locPrefix+uid;
+
+                Console.WriteLine("["+text.debugMetadata.startLineNumber+"] "+text.text+" : "+locID);
+
+                string locTag = null;
+                List<string> tags = GetTagsAfterText(text);
+                if (tags.Count>0) {
+                    foreach(var tag in tags) {
+                        Console.WriteLine(" "+tag);
+                    }
+                }
+
+            }
+
             return true;
+        }
+
+
+        // Checking it's a tag. Is there a StartTag earlier in the parent content?        
+        private bool IsTextTag(Text text) {
+
+            int inTag = 0;
+
+            foreach (var sibling in text.parent.content) {
+                if (sibling==text) {
+                    break;
+                }
+                if (sibling is Tag) {
+                    var tag = (Tag)sibling;
+                    if (tag.isStart)
+                        inTag++;
+                    else
+                        inTag--;
+                }
+            }
+
+            return (inTag>0);
+        }
+
+        private List<string> GetTagsAfterText(Text text) {
+        
+            var tags = new List<string>();
+
+            bool afterText = false;
+            int inTag = 0;
+
+            foreach (var sibling in text.parent.content) {
+                
+                if (sibling==text) {
+                    afterText = true;
+                    continue;
+                }
+                if (!afterText)
+                    continue;
+                
+                if (sibling is Tag) {
+                    var tag = (Tag)sibling;
+                    if (tag.isStart)
+                        inTag++;
+                    else
+                        inTag--;
+                    continue;
+                }
+
+                if ((inTag>0) && (sibling is Text)) {
+                    tags.Add(((Text)sibling).text);
+                } 
+            }
+            return tags;
+        }
+
+        // Constructs a prefix from knot / stitch
+        private string MakeLocPrefix(Text text) {
+
+            string prefix = "";
+            foreach (var obj in text.ancestry) {
+                if (obj is Knot)
+                    prefix+=((Knot)obj).name+"_";
+                if (obj is Stitch)
+                    prefix+=((Stitch)obj).name+"_";
+            }
+
+            return prefix;
+        }
+
+        private static Random _random = new Random();
+        private static string GenerateID(int length=4)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            char[] stringChars = new char[length];
+            for (int i = 0; i < length; i++)
+            {
+                stringChars[i] = chars[_random.Next(chars.Length)];
+            }
+            return new String(stringChars);
+        }
+
+        void OnError(string message, ErrorType type)
+        {
+            _inkParseErrors = true;
+            Console.Error.WriteLine("Ink Parse Error: "+message);
         }
     }
 }

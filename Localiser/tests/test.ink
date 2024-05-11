@@ -1,3 +1,4 @@
+INCLUDE tests/included1.ink
 VAR something = ""
 
 -> Intro
@@ -7,7 +8,7 @@ A normal line.
 *[Test1 #tagged]
     ~something = "HelloInAVar."
     Something inside a choice.
-*[Test2]
+*[Test2 #tagish]
     Something else inside a choice.
 -
 Carry on.
@@ -24,7 +25,7 @@ Some var \{something\} work for errors?
 ~ tempVar = tempVar+1
 
 {tempVar:
--0: Hello. #tagHello
+-0: Hello. #tagHello #Set of tags #loc:fred #tagBum
 -1: One.
 -3: Three.
 -else:
