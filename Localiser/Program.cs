@@ -1,11 +1,9 @@
 ﻿using Ink;
 using InkLocaliser;
 
-
-string filePath = "tests/test.ink";
-
 var localiser = new Localiser();
-localiser.AddFile(filePath);
+localiser.AddFile("tests/test.ink");
+localiser.AddFile("tests/test2.ink");
 
 if (!localiser.Run()) {
     Console.Error.WriteLine("Not localised.");

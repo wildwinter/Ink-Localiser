@@ -1,12 +1,15 @@
+using System.Collections.Specialized;
 using Ink;
 using Ink.Parsed;
 
 namespace InkLocaliser
 {
     public class Localiser {
-        private List<string> _inkFiles = new();
+        private HashSet<string> _inkFiles = new();
         private IFileHandler _fileHandler = new DefaultFileHandler();
         private bool _inkParseErrors = false;
+        private List<string> _filesVisited = new();
+        private OrderedDictionary _strings = new();
 
         public Localiser() {
         }
@@ -37,6 +40,8 @@ namespace InkLocaliser
         }
 
         private bool ProcessStory(Story story) {
+                
+            HashSet<string> newFileIDs = new();
 
             // ---- Find all the things we should localise ----
             List<Text> validTextObjects = new List<Text>();
@@ -62,9 +67,20 @@ namespace InkLocaliser
                     return false;
                 }
                 lastLineNumber = text.debugMetadata.startLineNumber;
+
+                // Have we already visited this source file i.e. is it in an include we've seen before?
+                // If so, skip.
+                string fileID = System.IO.Path.GetFileNameWithoutExtension(text.debugMetadata.fileName);
+                if (_filesVisited.Contains(fileID)) {
+                    continue;
+                }
+                newFileIDs.Add(fileID);
                     
                 validTextObjects.Add(text);
             }
+
+            if (newFileIDs.Count>0)
+                _filesVisited.AddRange(newFileIDs);
 
             // ---- Sort out IDs ----
             // Now we've got our list of text, let's iterate through looking for IDs, and create them when they're missing.
@@ -79,14 +95,20 @@ namespace InkLocaliser
 
                 Console.WriteLine("["+text.debugMetadata.startLineNumber+"] "+text.text+" : "+locID);
 
-                string locTag = null;
+                string? locTag = null;
                 List<string> tags = GetTagsAfterText(text);
                 if (tags.Count>0) {
                     foreach(var tag in tags) {
-                        Console.WriteLine(" "+tag);
+                        if (tag.StartsWith("loc:")) {
+                            locTag = tag;
+                            break;
+                        }
                     }
+                    if (locTag!=null)
+                        Console.WriteLine("  "+locTag);
                 }
 
+                _strings[locID] = text.text;
             }
 
             return true;
