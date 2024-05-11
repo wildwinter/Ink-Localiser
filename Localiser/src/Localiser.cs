@@ -5,11 +5,18 @@ using Ink.Parsed;
 namespace InkLocaliser
 {
     public class Localiser {
+
+        public struct TagInsert {
+            public Text text;
+            public string locID;
+        }
+
         private HashSet<string> _inkFiles = new();
         private IFileHandler _fileHandler = new DefaultFileHandler();
         private bool _inkParseErrors = false;
-        private List<string> _filesVisited = new();
+        private HashSet<string> _filesVisited = new();
         private OrderedDictionary _strings = new();
+        private Dictionary<string, List<TagInsert>> _filesWorkToDo = new();
 
         public Localiser() {
         }
@@ -36,6 +43,10 @@ namespace InkLocaliser
                 if (!ProcessStory(story))
                     return false;
             }
+
+            if (!InsertNewTags())
+                return false;
+
             return true;
         }
 
@@ -80,7 +91,7 @@ namespace InkLocaliser
             }
 
             if (newFileIDs.Count>0)
-                _filesVisited.AddRange(newFileIDs);
+                _filesVisited.UnionWith(newFileIDs);
 
             // ---- Sort out IDs ----
             // Now we've got our list of text, let's iterate through looking for IDs, and create them when they're missing.
@@ -88,25 +99,31 @@ namespace InkLocaliser
 
             foreach(var text in validTextObjects) {
 
-                string pathPrefix = System.IO.Path.GetFileNameWithoutExtension(text.debugMetadata.fileName)+"_";  
+                string fileID = System.IO.Path.GetFileNameWithoutExtension(text.debugMetadata.fileName);
+                string pathPrefix = fileID+"_";  
                 string locPrefix = MakeLocPrefix(text);
                 string uid = GenerateID();  
                 string locID = pathPrefix+locPrefix+uid;
 
                 Console.WriteLine("["+text.debugMetadata.startLineNumber+"] "+text.text+" : "+locID);
 
-                string? locTag = null;
-                List<string> tags = GetTagsAfterText(text);
-                if (tags.Count>0) {
-                    foreach(var tag in tags) {
-                        if (tag.StartsWith("loc:")) {
-                            locTag = tag;
-                            break;
-                        }
-                    }
-                    if (locTag!=null)
-                        Console.WriteLine("  "+locTag);
+                // Does the source already have a #loc: tag?
+                string? locTag = FindLocTagID(text);
+                if (locTag!=null)
+                {
+                    Console.WriteLine("  "+locTag);
                 }
+                else {
+                    if (!_filesWorkToDo.ContainsKey(fileID))
+                        _filesWorkToDo[fileID] = new List<TagInsert>();
+                    var insert = new TagInsert
+                    {
+                        text = text,
+                        locID = locID
+                    };
+                    _filesWorkToDo[fileID].Add(insert);
+                }
+  
 
                 _strings[locID] = text.text;
             }
@@ -114,6 +131,19 @@ namespace InkLocaliser
             return true;
         }
 
+        private bool InsertNewTags() {
+
+            foreach (var (fileID, workList) in _filesWorkToDo) {
+                if (workList.Count==0)
+                    continue;
+                
+                Console.WriteLine($"File: {fileID}");
+                foreach(var item in workList) {
+                    Console.WriteLine($" {item.locID}: {item.text.text}");
+                }
+            }
+            return true;
+        }
 
         // Checking it's a tag. Is there a StartTag earlier in the parent content?        
         private bool IsTextTag(Text text) {
@@ -134,6 +164,18 @@ namespace InkLocaliser
             }
 
             return (inTag>0);
+        }
+
+        private string? FindLocTagID(Text text) {
+            List<string> tags = GetTagsAfterText(text);
+            if (tags.Count>0) {
+                foreach(var tag in tags) {
+                    if (tag.StartsWith("loc:")) {
+                        return tag.Substring(4);
+                    }
+                }
+            }
+            return null;
         }
 
         private List<string> GetTagsAfterText(Text text) {
