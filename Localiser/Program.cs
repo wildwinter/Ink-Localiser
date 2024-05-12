@@ -1,7 +1,9 @@
-﻿using Ink;
-using InkLocaliser;
+﻿using InkLocaliser;
 
-var localiser = new Localiser();
+var options = new Localiser.Options();
+options.retagAll = true;
+
+var localiser = new Localiser(options);
 localiser.AddFile("tests/test.ink");
 localiser.AddFile("tests/test2.ink");
 

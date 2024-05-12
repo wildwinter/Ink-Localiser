@@ -1,10 +1,20 @@
 using System.Collections.Specialized;
+using System.Text;
+using System.Text.RegularExpressions;
 using Ink;
 using Ink.Parsed;
 
 namespace InkLocaliser
 {
     public class Localiser {
+
+        private static string TAG_LOC = "loc:";
+
+        public class Options {
+            public bool retagAll = false;
+            public bool debugRetagFiles = true; // Write retags to .ink.txt, not just .ink
+        }
+        private Options _options;
 
         protected struct TagInsert {
             public Text text;
@@ -18,7 +28,8 @@ namespace InkLocaliser
         private OrderedDictionary _strings = new();
         private Dictionary<string, List<TagInsert>> _filesTagsToInsert = new();
 
-        public Localiser() {
+        public Localiser(Options? options = null) {
+            _options = options ?? new Options();
         }
 
         public void AddFile(string inkFile) {
@@ -67,8 +78,9 @@ namespace InkLocaliser
                 if (IsTextTag(text))
                     continue;
 
-                // Is this inside a variable assignment? In which case we can't do anything with that.
-                if (text.parent is VariableAssignment) {
+                // Is this inside some code? In which case we can't do anything with that.
+                if (text.parent is VariableAssignment ||
+                    text.parent is StringExpression) {
                     continue;
                 }
 
@@ -86,6 +98,9 @@ namespace InkLocaliser
                     continue;
                 }
                 newFileIDs.Add(fileID);
+
+
+                Console.WriteLine(text.text+"-"+text.parent.GetType());
                     
                 validTextObjects.Add(text);
             }
@@ -100,23 +115,17 @@ namespace InkLocaliser
             foreach(var text in validTextObjects) {
 
                 string fileName = text.debugMetadata.fileName;
-                Console.WriteLine("FILE:"+fileName);
                 string fileID = System.IO.Path.GetFileNameWithoutExtension(fileName);
                 string pathPrefix = fileID+"_";  
                 string locPrefix = MakeLocPrefix(text);
                 string uid = GenerateID();  
                 string locID = pathPrefix+locPrefix+uid;
 
-                Console.WriteLine("["+text.debugMetadata.startLineNumber+"] "+text.text+" : "+locID);
-
                 // Does the source already have a #loc: tag?
                 string? locTag = FindLocTagID(text);
-                if (locTag!=null)
+                // Replace either if there's no tag or if we're forcing a retag
+                if (locTag==null || _options.retagAll)
                 {
-                    Console.WriteLine("  "+locTag);
-                }
-                else {
-
                     if (!_filesTagsToInsert.ContainsKey(fileName))
                         _filesTagsToInsert[fileName] = new List<TagInsert>();
                     var insert = new TagInsert
@@ -139,13 +148,67 @@ namespace InkLocaliser
                 if (workList.Count==0)
                     continue;
                 
-                Console.WriteLine($"File: {fileName}");
-                string content = _fileHandler.LoadInkFileContents(fileName);
-                foreach(var item in workList) {
-                    Console.WriteLine($" {item.locID}: {item.text.text}");
-                }
+                Console.WriteLine($"Updating IDs in file: {fileName}");
+
+                if (!InsertTagsToFile(fileName, workList))
+                    return false;
             }
             return true;
+        }
+
+        private bool InsertTagsToFile(string fileName, List<TagInsert> workList) {
+
+            try {             
+                string filePath = _fileHandler.ResolveInkFilename(fileName);
+                string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
+
+                foreach(var item in workList) {
+                    // Tag
+                    string newTag = $"#{TAG_LOC}{item.locID}";
+
+                    // Find out where we're supposed to do the insert.
+                    int lineNumber = item.text.debugMetadata.endLineNumber-1;
+                    string oldLine = lines[lineNumber];
+
+                    if (oldLine.Contains($"#{TAG_LOC}")) {
+                        // Is there already a tag called Loc: in there? In which case, we just want to replace that.
+
+                        // Regex pattern to find "#loc:" followed by any alphanumeric characters or underscores
+                        string pattern = $@"(#{TAG_LOC})\w+";
+
+                        // Replace the matched text
+                        string newLine = Regex.Replace(oldLine, pattern, $"{newTag}");
+                        lines[lineNumber] = newLine;
+                    }
+                    else
+                    {
+                        // No tag, add a new one.
+                        int charPos = item.text.debugMetadata.endCharacterNumber-1;
+
+                        
+                        if (!Char.IsWhiteSpace(oldLine[charPos-1]))
+                            newTag = " "+newTag;
+                        if (oldLine.Length>charPos && oldLine[charPos]=='#')
+                            newTag = newTag+" ";
+                        string newLine = oldLine.Insert(charPos, newTag);
+                        lines[lineNumber] = newLine;
+                    }
+                    
+                    //Console.WriteLine($"Trying to add new tag for text:{item.text.text} at position {charPos} line:\n{lines[lineNumber]}");
+                }
+
+                string output = String.Join("\n", lines);
+                string outputFilePath = filePath;
+                if (_options.debugRetagFiles)
+                    outputFilePath += ".txt";
+                File.WriteAllText(outputFilePath, output, Encoding.UTF8);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error replacing tags in {fileName}: " + ex.Message);
+                return false;
+            }
         }
 
         // Checking it's a tag. Is there a StartTag earlier in the parent content?        
@@ -173,7 +236,7 @@ namespace InkLocaliser
             List<string> tags = GetTagsAfterText(text);
             if (tags.Count>0) {
                 foreach(var tag in tags) {
-                    if (tag.StartsWith("loc:")) {
+                    if (tag.StartsWith(TAG_LOC)) {
                         return tag.Substring(4);
                     }
                 }

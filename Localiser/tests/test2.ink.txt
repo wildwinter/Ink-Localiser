@@ -1,0 +1,12 @@
+﻿INCLUDE tests/included1.ink
+
+-> Intro
+== Intro
+This is a totally different file. #loc:test2_Intro_IOTJ
+*[Is it working? #loc:test2_Intro_3P16]
+    Maybe. #loc:test2_Intro_DRD2
+*[Or not... #loc:test2_Intro_ZECA]
+    Or not. #loc:test2_Intro_CHY5
+-
+Okay? #loc:test2_Intro_8WAD
+-> END

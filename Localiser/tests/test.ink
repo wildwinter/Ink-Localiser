@@ -1,5 +1,5 @@
 INCLUDE tests/included1.ink
-VAR something = ""
+VAR something = "fff"
 
 -> Intro
 

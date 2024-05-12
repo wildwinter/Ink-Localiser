@@ -1,0 +1,49 @@
+﻿INCLUDE tests/included1.ink
+VAR something = "fff"
+
+-> Intro
+
+== Intro
+A normal line. #loc:test_Intro_VEGQ
+*[Test1 #loc:test_Intro_IYV6 #tagged]
+    ~something = "HelloInAVar."
+    Something inside a choice. #loc:test_Intro_JOAM
+*[Test2 #loc:test_Intro_1XB7 #tagish]
+    Something else inside a choice. #loc:test_Intro_EPHB
+-
+Carry on. #loc:test_Intro_70GY
+
+Let's do some branching: #loc:test_Intro_Y5DQ
+-> Branch
+
+= Branch
+Here's a branch. #loc:test_Intro_Branch_7U6A #tagBranch
+
+Some var \{something\} work for errors? #loc:test_Intro_Branch_T2Q2
+
+~temp tempVar = 10
+~ tempVar = tempVar+1
+
+{tempVar:
+-0: Hello. #tagHello #Set of tags #loc:test_Intro_Branch_WK1S #tagBum
+-1: One. #loc:test_Intro_Branch_FXLK
+-3: Three. #loc:test_Intro_Branch_QB20
+-else:
+    Something else. #loc:test_Intro_Branch_G1M1
+}
+
+{tempVar>0:
+    Greater than 0! #loc:test_Intro_Branch_VX0V #tagGreater
+    -> Ending1
+- else:
+    Less than or equals 0! #loc:test_Intro_Branch_I3TK #tagLesser
+    -> Ending2
+}
+
+== Ending1
+This is ending 1. #loc:test_Ending1_JYPN
+->END
+
+==Ending2
+This is ending 2. #loc:test_Ending2_BMZU
+->END
