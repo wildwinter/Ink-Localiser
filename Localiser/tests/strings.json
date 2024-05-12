@@ -1,4 +1,15 @@
 ﻿{
+  "test2_Intro_JQHE": "This is a totally different file.",
+  "test2_Intro_D7R9": "Is it working?",
+  "test2_Intro_A7MG": "Maybe.",
+  "test2_Intro_0HMD": "Or not...",
+  "test2_Intro_R48T": "Or not.",
+  "test2_Intro_YE0K": "Okay?",
+  "included1_Bumf_08CD": "This is in an included file.",
+  "included1_Bumf_2G01": "Just so you know",
+  "included1_Bumf_VXZ6": "Includes work.",
+  "included1_Bumf_39UQ": "Bah!",
+  "included1_Nuget_5IHO": "Testing a nuget.",
   "test_Intro_7N83": "A normal line.",
   "test_Intro_KNIN": "Test1",
   "test_Intro_2AFA": "Something inside a choice is this hard.",
@@ -17,15 +28,5 @@
   "test_Intro_Branch_2MRX": "Greater than 0!",
   "test_Intro_Branch_CETA": "Less than or equals 0!",
   "test_Ending1_KRRF": "This is ending 1.",
-  "test_Ending2_LJEV": "This is ending 2.",
-  "included1_Bumf_08CD": "This is in an included file.",
-  "included1_Bumf_2G01": "Just so you know",
-  "included1_Bumf_VXZ6": "Includes work.",
-  "included1_Bumf_39UQ": "Bah!",
-  "test2_Intro_JQHE": "This is a totally different file.",
-  "test2_Intro_D7R9": "Is it working?",
-  "test2_Intro_A7MG": "Maybe.",
-  "test2_Intro_0HMD": "Or not...",
-  "test2_Intro_R48T": "Or not.",
-  "test2_Intro_YE0K": "Okay?"
+  "test_Ending2_LJEV": "This is ending 2."
 }

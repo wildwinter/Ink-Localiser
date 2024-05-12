@@ -7,3 +7,7 @@ This is in an included file. #loc:included1_Bumf_08CD #Bumf
 -
 Bah! #loc:included1_Bumf_39UQ
 -> DONE
+
+== Nuget
+Testing a nuget. #loc:included1_Nuget_5IHO
+-> Intro.Branch

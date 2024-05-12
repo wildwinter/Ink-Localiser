@@ -8,10 +8,12 @@ namespace InkLocaliser
     public class Localiser {
 
         private static string TAG_LOC = "loc:";
+        private static bool DEBUG_RETAG_FILES = false;
 
         public class Options {
             public bool retagAll = false;
-            public bool debugRetagFiles = false; // Write retags to .ink.txt, not just .ink
+            public string folderPath = "";
+            public string filePattern = "*.ink";
         }
         private Options _options;
 
@@ -20,7 +22,6 @@ namespace InkLocaliser
             public string locID;
         }
 
-        private HashSet<string> _inkFiles = new();
         private IFileHandler _fileHandler = new DefaultFileHandler();
         private bool _inkParseErrors = false;
         private HashSet<string> _filesVisited = new();
@@ -34,12 +35,27 @@ namespace InkLocaliser
             _options = options ?? new Options();
         }
 
-        public void AddFile(string inkFile) {
-            _inkFiles.Add(inkFile);
-        }
-
         public bool Run() {
-            foreach(var inkFile in _inkFiles) {
+
+            // ----- Figure out which files to inclues =====
+            List<string> inkFiles = new();
+
+            try {
+                string folderPath = _options.folderPath;
+                if (String.IsNullOrWhiteSpace(folderPath))
+                    folderPath = Environment.CurrentDirectory;
+                
+                DirectoryInfo dir = new DirectoryInfo(folderPath);
+                foreach (FileInfo file in dir.GetFiles(_options.filePattern))
+                {
+                    inkFiles.Add(file.FullName);
+                }
+            } catch (Exception ex) {
+                Console.Error.WriteLine($"Error finding files to process: {_options.folderPath}/{_options.filePattern}: " + ex.Message);
+                return false;
+            }
+
+            foreach(var inkFile in inkFiles) {
                 
                 var content = _fileHandler.LoadInkFileContents(inkFile);
                 if (content==null)
@@ -242,7 +258,7 @@ namespace InkLocaliser
                 // Write out to the input file.
                 string output = String.Join("\n", lines);
                 string outputFilePath = filePath;
-                if (_options.debugRetagFiles)   // Debug purposes, copy to a different file instead.
+                if (DEBUG_RETAG_FILES)   // Debug purposes, copy to a different file instead.
                     outputFilePath += ".txt";
                 File.WriteAllText(outputFilePath, output, Encoding.UTF8);
                 return true;
