@@ -12,11 +12,6 @@ namespace InkLocaliser
         private Options _options;
         private Localiser _localiser;
 
-        protected struct LineEntry {
-            public string id {get;set;}
-            public string text {get;set;}
-        }
-
         public JSONHandler(Localiser localiser, Options? options = null) {
             _localiser = localiser;
             _options = options ?? new Options();
@@ -30,9 +25,10 @@ namespace InkLocaliser
 
             try {
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                List<LineEntry> entries = new();
+                Dictionary<string, string> entries = new();
+
                 foreach(var locID in _localiser.GetStringKeys()) {
-                    entries.Add(new LineEntry{id = locID, text = _localiser.GetString(locID)});
+                    entries.Add(locID, _localiser.GetString(locID));
                 }
                 string fileContents = JsonSerializer.Serialize(entries, options);
 
