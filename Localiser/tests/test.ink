@@ -3,8 +3,9 @@ VAR something = "fff"
 
 -> Intro
 
+// How does it cope with comments?
 == Intro
-A normal line.
+A normal line. // What about this comment?
 *[Test1 #tagged]
     ~something = "HelloInAVar."
     Something inside a choice.
@@ -13,11 +14,11 @@ A normal line.
 -
 Carry on.
 
-Let's do some branching: 
+Let's do some branching - "do quotes and, commas work?" ("" ,,): 
 -> Branch
 
 = Branch
-Here's a branch. #tagBranch
+Here's a branch. #tagBranch // Or this comment?
 
 Some var \{something\} work for errors?
 

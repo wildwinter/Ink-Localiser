@@ -11,7 +11,7 @@ namespace InkLocaliser
 
         public class Options {
             public bool retagAll = false;
-            public bool debugRetagFiles = true; // Write retags to .ink.txt, not just .ink
+            public bool debugRetagFiles = false; // Write retags to .ink.txt, not just .ink
         }
                 private Options _options;
 
@@ -223,7 +223,7 @@ namespace InkLocaliser
                         // Pad between other tags or previous item
                         if (!Char.IsWhiteSpace(oldLine[charPos-1]))
                             newTag = " "+newTag;
-                        if (oldLine.Length>charPos && oldLine[charPos]=='#')
+                        if (oldLine.Length>charPos && (oldLine[charPos]=='#' || oldLine[charPos]=='/'))
                             newTag = newTag+" ";
 
                         newLine = oldLine.Insert(charPos, newTag);

@@ -2,6 +2,7 @@
 
 var options = new Localiser.Options();
 //options.retagAll = true;
+//options.debugRetagFiles = false;
 
 var localiser = new Localiser(options);
 localiser.AddFile("tests/test.ink");
@@ -14,8 +15,8 @@ if (!localiser.Run()) {
 
 var csvOptions = new CSVHandler.Options();
 
-var csvHandler = new CSVHandler(csvOptions);
-if (!csvHandler.WriteStrings(localiser)) {
+var csvHandler = new CSVHandler(localiser, csvOptions);
+if (!csvHandler.WriteStrings()) {
     Console.Error.WriteLine("Database not written.");
     return -1;
 }
