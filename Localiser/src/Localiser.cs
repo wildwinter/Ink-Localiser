@@ -296,16 +296,19 @@ namespace InkLocaliser
 
             foreach (var sibling in text.parent.content) {
                 
+                // Have we hit the text we care about yet? If not, carry on.
                 if (sibling==text) {
                     afterText = true;
                     continue;
                 }
                 if (!afterText)
                     continue;
-                    
+
+                // Have we hit an end-of-line marker? If so, stop looking, no tags here.   
                 if (sibling is Text && ((Text)sibling).text=="\n")
                     break;
 
+                // Have we found the start or end of a tag?
                 if (sibling is Tag) {
                     var tag = (Tag)sibling;
                     if (tag.isStart)
@@ -315,6 +318,7 @@ namespace InkLocaliser
                     continue;
                 }
 
+                // Have we hit the end of a tag? Add it to our tag list!
                 if ((inTag>0) && (sibling is Text)) {
                     tags.Add(((Text)sibling).text.Trim());
                 } 
@@ -337,6 +341,8 @@ namespace InkLocaliser
         }
 
         private string GenerateUniqueID(string locPrefix){
+            // Repeat a lot to try and get options. Should be hard to fail at this but
+            // let's set a limit to stop locks.
             for (int i=0;i<100;i++) {
                 string locID = locPrefix+GenerateID();
                 if (!_existingIDs.Contains(locID)) {
