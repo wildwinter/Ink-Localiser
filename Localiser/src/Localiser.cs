@@ -18,7 +18,7 @@ namespace InkLocaliser
 
         protected struct TagInsert {
             public Text text;
-            public string locID;
+            public string locPrefix;
         }
 
         private HashSet<string> _inkFiles = new();
@@ -27,6 +27,7 @@ namespace InkLocaliser
         private HashSet<string> _filesVisited = new();
         private OrderedDictionary _strings = new();
         private Dictionary<string, List<TagInsert>> _filesTagsToInsert = new();
+        private HashSet<string> _existingIDs = new();
 
         public Localiser(Options? options = null) {
             _options = options ?? new Options();
@@ -119,7 +120,6 @@ namespace InkLocaliser
                 string pathPrefix = fileID+"_";  
                 string locPrefix = MakeLocPrefix(text);
                 string uid = GenerateID();  
-                string locID = pathPrefix+locPrefix+uid;
 
                 // Does the source already have a #loc: tag?
                 string? locTag = FindLocTagID(text);
@@ -131,12 +131,13 @@ namespace InkLocaliser
                     var insert = new TagInsert
                     {
                         text = text,
-                        locID = locID
+                        locPrefix = locPrefix
                     };
                     _filesTagsToInsert[fileName].Add(insert);
                 }
-
-                _strings[locID] = text.text;
+                else {
+                    _existingIDs.Add(locTag);
+                }
             }
 
             return true;
@@ -163,8 +164,12 @@ namespace InkLocaliser
                 string[] lines = File.ReadAllLines(filePath, Encoding.UTF8);
 
                 foreach(var item in workList) {
+
+                    // Figure out unique ID
+                    string locID = GenerateUniqueID(item.locPrefix);
+
                     // Tag
-                    string newTag = $"#{TAG_LOC}{item.locID}";
+                    string newTag = $"#{TAG_LOC}{locID}";
 
                     // Find out where we're supposed to do the insert.
                     int lineNumber = item.text.debugMetadata.endLineNumber-1;
@@ -288,6 +293,17 @@ namespace InkLocaliser
             }
 
             return prefix;
+        }
+
+        private string GenerateUniqueID(string locPrefix){
+            for (int i=0;i<100;i++) {
+                string locID = locPrefix+GenerateID();
+                if (!_existingIDs.Contains(locID)) {
+                    _existingIDs.Add(locID);
+                    return locID;
+                }
+            }
+            throw new Exception("Couldn't generate a unique ID! Really unlikely. Try again!");
         }
 
         private static Random _random = new Random();
