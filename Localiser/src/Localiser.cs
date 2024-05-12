@@ -13,7 +13,7 @@ namespace InkLocaliser
             public bool retagAll = false;
             public bool debugRetagFiles = false; // Write retags to .ink.txt, not just .ink
         }
-                private Options _options;
+        private Options _options;
 
         protected struct TagInsert {
             public Text text;

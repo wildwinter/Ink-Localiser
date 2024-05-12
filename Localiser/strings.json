@@ -1,0 +1,118 @@
+﻿[
+  {
+    "id": "test_Intro_7N83",
+    "text": "A normal line."
+  },
+  {
+    "id": "test_Intro_KNIN",
+    "text": "Test1"
+  },
+  {
+    "id": "test_Intro_2AFA",
+    "text": "Something inside a choice is this hard."
+  },
+  {
+    "id": "test_Intro_AB0U",
+    "text": "Test2"
+  },
+  {
+    "id": "test_Intro_WJ1D",
+    "text": "Buckles."
+  },
+  {
+    "id": "test_Intro_E6Y3",
+    "text": "Something else inside a choice2."
+  },
+  {
+    "id": "test_Intro_ZZOT",
+    "text": "Booyah."
+  },
+  {
+    "id": "test_Intro_DTJ6",
+    "text": "Carry on."
+  },
+  {
+    "id": "test_Intro_CXVI",
+    "text": "Let\u0027s do some branching - \u0022do quotes and, commas work?\u0022 (\u0022\u0022 ,,):"
+  },
+  {
+    "id": "test_Intro_Branch_P9Q5",
+    "text": "Here\u0027s a branch."
+  },
+  {
+    "id": "test_Intro_Branch_JRHG",
+    "text": "Some var {something} work for errors?"
+  },
+  {
+    "id": "fred",
+    "text": "Hello."
+  },
+  {
+    "id": "test_Intro_Branch_3R1Y",
+    "text": "One."
+  },
+  {
+    "id": "test_Intro_Branch_L3M2",
+    "text": "Three."
+  },
+  {
+    "id": "test_Intro_Branch_TU9M",
+    "text": "Something else."
+  },
+  {
+    "id": "test_Intro_Branch_2MRX",
+    "text": "Greater than 0!"
+  },
+  {
+    "id": "test_Intro_Branch_CETA",
+    "text": "Less than or equals 0!"
+  },
+  {
+    "id": "test_Ending1_KRRF",
+    "text": "This is ending 1."
+  },
+  {
+    "id": "test_Ending2_LJEV",
+    "text": "This is ending 2."
+  },
+  {
+    "id": "included1_Bumf_08CD",
+    "text": "This is in an included file."
+  },
+  {
+    "id": "included1_Bumf_2G01",
+    "text": "Just so you know"
+  },
+  {
+    "id": "included1_Bumf_VXZ6",
+    "text": "Includes work."
+  },
+  {
+    "id": "included1_Bumf_39UQ",
+    "text": "Bah!"
+  },
+  {
+    "id": "test2_Intro_JQHE",
+    "text": "This is a totally different file."
+  },
+  {
+    "id": "test2_Intro_D7R9",
+    "text": "Is it working?"
+  },
+  {
+    "id": "test2_Intro_A7MG",
+    "text": "Maybe."
+  },
+  {
+    "id": "test2_Intro_0HMD",
+    "text": "Or not..."
+  },
+  {
+    "id": "test2_Intro_R48T",
+    "text": "Or not."
+  },
+  {
+    "id": "test2_Intro_YE0K",
+    "text": "Okay?"
+  }
+]

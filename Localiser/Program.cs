@@ -21,5 +21,13 @@ if (!csvHandler.WriteStrings()) {
     return -1;
 }
 
+var jsonOptions = new JSONHandler.Options();
+
+var jsonHandler = new JSONHandler(localiser, jsonOptions);
+if (!jsonHandler.WriteStrings()) {
+    Console.Error.WriteLine("Database not written.");
+    return -1;
+}
+
 Console.WriteLine("Localised!");
 return 0;
