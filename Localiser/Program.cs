@@ -14,6 +14,7 @@ if (!localiser.Run()) {
 }
 
 var csvOptions = new CSVHandler.Options();
+csvOptions.outputFilePath = "tests/strings.csv";
 
 var csvHandler = new CSVHandler(localiser, csvOptions);
 if (!csvHandler.WriteStrings()) {
@@ -22,6 +23,7 @@ if (!csvHandler.WriteStrings()) {
 }
 
 var jsonOptions = new JSONHandler.Options();
+jsonOptions.outputFilePath = "tests/strings.json";
 
 var jsonHandler = new JSONHandler(localiser, jsonOptions);
 if (!jsonHandler.WriteStrings()) {
