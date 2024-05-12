@@ -1,9 +1,9 @@
 ﻿== Bumf
 
-This is in an included file. #loc:Bumf_C8UV #Bumf
+This is in an included file. #loc:included1_Bumf_2E7S #Bumf
 
-* [Just so you know #loc:Bumf_7SX8]
-+ [Includes work. #loc:Bumf_1UIJ]
+* [Just so you know #loc:included1_Bumf_8GD7]
++ [Includes work. #loc:included1_Bumf_5GKV]
 -
-Bah! #loc:Bumf_Y41S
+Bah! #loc:included1_Bumf_QIXU
 -> DONE

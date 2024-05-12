@@ -1,4 +1,6 @@
+using System.Collections;
 using System.Collections.Specialized;
+using System.Dynamic;
 using System.Text;
 using System.Text.RegularExpressions;
 using Ink;
@@ -18,16 +20,18 @@ namespace InkLocaliser
 
         protected struct TagInsert {
             public Text text;
-            public string locPrefix;
+            public string locID;
         }
 
         private HashSet<string> _inkFiles = new();
         private IFileHandler _fileHandler = new DefaultFileHandler();
         private bool _inkParseErrors = false;
         private HashSet<string> _filesVisited = new();
-        private OrderedDictionary _strings = new();
         private Dictionary<string, List<TagInsert>> _filesTagsToInsert = new();
         private HashSet<string> _existingIDs = new();
+
+        private List<string> _stringKeys = new();
+        private Dictionary<string, string> _stringValues = new();
 
         public Localiser(Options? options = null) {
             _options = options ?? new Options();
@@ -60,6 +64,14 @@ namespace InkLocaliser
                 return false;
 
             return true;
+        }
+
+        public string GetString(string locID) {
+            return _stringValues[locID];
+        }
+
+        public IList<string> GetStringKeys() {
+            return _stringKeys;
         }
 
         private bool ProcessStory(Story story) {
@@ -100,14 +112,21 @@ namespace InkLocaliser
                 }
                 newFileIDs.Add(fileID);
 
-
-                Console.WriteLine(text.text+"-"+text.parent.GetType());
-                    
                 validTextObjects.Add(text);
             }
 
             if (newFileIDs.Count>0)
                 _filesVisited.UnionWith(newFileIDs);
+
+            // ---- Scan for existing IDs ----
+            // Build list of existing IDs (so we don't duplicate)
+            if (!_options.retagAll) { // Don't do this is we want to retag everything.
+                foreach(var text in validTextObjects) {
+                    string? locTag = FindLocTagID(text);
+                    if (locTag!=null)
+                        _existingIDs.Add(locTag);
+                }
+            }
 
             // ---- Sort out IDs ----
             // Now we've got our list of text, let's iterate through looking for IDs, and create them when they're missing.
@@ -115,32 +134,49 @@ namespace InkLocaliser
 
             foreach(var text in validTextObjects) {
 
+                // Does the source already have a #loc: tag?
+                string? locID = FindLocTagID(text);
+                
+                // Skip if there's a tag and we aren't forcing a retag 
+                if (locID!=null && !_options.retagAll) {
+                    // Add to localisation strings.
+                    AddString(locID, text.text);
+                    continue;
+                }
+
+                // Generate a new ID
                 string fileName = text.debugMetadata.fileName;
                 string fileID = System.IO.Path.GetFileNameWithoutExtension(fileName);
                 string pathPrefix = fileID+"_";  
-                string locPrefix = MakeLocPrefix(text);
-                string uid = GenerateID();  
+                string locPrefix = pathPrefix+MakeLocPrefix(text);
+                locID = GenerateUniqueID(locPrefix); 
 
-                // Does the source already have a #loc: tag?
-                string? locTag = FindLocTagID(text);
-                // Replace either if there's no tag or if we're forcing a retag
-                if (locTag==null || _options.retagAll)
+                // Add the ID and text object to a list of things to fix up in this file.
+
+                if (!_filesTagsToInsert.ContainsKey(fileName))
+                    _filesTagsToInsert[fileName] = new List<TagInsert>();
+
+                var insert = new TagInsert
                 {
-                    if (!_filesTagsToInsert.ContainsKey(fileName))
-                        _filesTagsToInsert[fileName] = new List<TagInsert>();
-                    var insert = new TagInsert
-                    {
-                        text = text,
-                        locPrefix = locPrefix
-                    };
-                    _filesTagsToInsert[fileName].Add(insert);
-                }
-                else {
-                    _existingIDs.Add(locTag);
-                }
+                    text = text,
+                    locID = locID
+                };
+                _filesTagsToInsert[fileName].Add(insert);
+
+                 // Add to localisation strings.
+                AddString(locID, text.text);
             }
 
+            foreach (var locID in _stringKeys)
+            {
+                Console.WriteLine($"[{locID}] {GetString(locID)}");
+            }
             return true;
+        }
+
+        private void AddString(string locID, string value) {
+            _stringKeys.Add(locID);
+            _stringValues[locID]=value;
         }
 
         private bool InsertTagsToFiles() {
@@ -165,15 +201,13 @@ namespace InkLocaliser
 
                 foreach(var item in workList) {
 
-                    // Figure out unique ID
-                    string locID = GenerateUniqueID(item.locPrefix);
-
                     // Tag
-                    string newTag = $"#{TAG_LOC}{locID}";
+                    string newTag = $"#{TAG_LOC}{item.locID}";
 
                     // Find out where we're supposed to do the insert.
                     int lineNumber = item.text.debugMetadata.endLineNumber-1;
                     string oldLine = lines[lineNumber];
+                    string newLine = "";
 
                     if (oldLine.Contains($"#{TAG_LOC}")) {
                         // Is there already a tag called Loc: in there? In which case, we just want to replace that.
@@ -182,29 +216,31 @@ namespace InkLocaliser
                         string pattern = $@"(#{TAG_LOC})\w+";
 
                         // Replace the matched text
-                        string newLine = Regex.Replace(oldLine, pattern, $"{newTag}");
-                        lines[lineNumber] = newLine;
+                        newLine = Regex.Replace(oldLine, pattern, $"{newTag}");
                     }
                     else
                     {
                         // No tag, add a new one.
                         int charPos = item.text.debugMetadata.endCharacterNumber-1;
 
-                        
+                        // Pad between other tags or previous item
                         if (!Char.IsWhiteSpace(oldLine[charPos-1]))
                             newTag = " "+newTag;
                         if (oldLine.Length>charPos && oldLine[charPos]=='#')
                             newTag = newTag+" ";
-                        string newLine = oldLine.Insert(charPos, newTag);
-                        lines[lineNumber] = newLine;
+
+                        newLine = oldLine.Insert(charPos, newTag);
                     }
+                    
+                    lines[lineNumber] = newLine;
                     
                     //Console.WriteLine($"Trying to add new tag for text:{item.text.text} at position {charPos} line:\n{lines[lineNumber]}");
                 }
 
+                // Write out to the input file.
                 string output = String.Join("\n", lines);
                 string outputFilePath = filePath;
-                if (_options.debugRetagFiles)
+                if (_options.debugRetagFiles)   // Debug purposes, copy to a different file instead.
                     outputFilePath += ".txt";
                 File.WriteAllText(outputFilePath, output, Encoding.UTF8);
                 return true;
