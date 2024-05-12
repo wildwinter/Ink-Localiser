@@ -1,6 +1,4 @@
-﻿// dotnet publish -c Release -o ./publish
-
-using InkLocaliser;
+﻿using InkLocaliser;
 
 var options = new Localiser.Options();
 options.folderPath="tests/";
