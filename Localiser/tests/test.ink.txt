@@ -4,46 +4,46 @@ VAR something = "fff"
 -> Intro
 
 == Intro
-A normal line. #loc:test_Intro_QYFO
-*[Test1 #loc:test_Intro_I71F #tagged]
+A normal line. #loc:test_Intro_G7GR
+*[Test1 #loc:test_Intro_RJCJ #tagged]
     ~something = "HelloInAVar."
-    Something inside a choice. #loc:test_Intro_S7E5
-*[Test2 #loc:test_Intro_0NWG #tagish]
-    Something else inside a choice. #loc:test_Intro_VLRU
+    Something inside a choice. #loc:test_Intro_HV6H
+*[Test2 #loc:test_Intro_VIVZ #tagish]
+    Something else inside a choice. #loc:test_Intro_D1OQ
 -
-Carry on. #loc:test_Intro_YJFB
+Carry on. #loc:test_Intro_7GPA
 
-Let's do some branching: #loc:test_Intro_PSKG
+Let's do some branching: #loc:test_Intro_5PTL
 -> Branch
 
 = Branch
-Here's a branch. #loc:test_Intro_Branch_CJGJ #tagBranch
+Here's a branch. #loc:test_Intro_Branch_VCUH #tagBranch
 
-Some var \{something\} work for errors? #loc:test_Intro_Branch_A4WC
+Some var \{something\} work for errors? #loc:test_Intro_Branch_TD05
 
 ~temp tempVar = 10
 ~ tempVar = tempVar+1
 
 {tempVar:
--0: Hello. #tagHello #Set of tags #loc:test_Intro_Branch_ZPUR #tagBum
--1: One. #loc:test_Intro_Branch_USN2
--3: Three. #loc:test_Intro_Branch_J0VS
+-0: Hello. #tagHello #Set of tags #loc:fred #tagBum
+-1: One. #loc:test_Intro_Branch_F3DH
+-3: Three. #loc:test_Intro_Branch_5E3W
 -else:
-    Something else. #loc:test_Intro_Branch_UKWN
+    Something else. #loc:test_Intro_Branch_4BRR
 }
 
 {tempVar>0:
-    Greater than 0! #loc:test_Intro_Branch_K6MY #tagGreater
+    Greater than 0! #loc:test_Intro_Branch_T51W #tagGreater
     -> Ending1
 - else:
-    Less than or equals 0! #loc:test_Intro_Branch_WEKJ #tagLesser
+    Less than or equals 0! #loc:test_Intro_Branch_EIF5 #tagLesser
     -> Ending2
 }
 
 == Ending1
-This is ending 1. #loc:test_Ending1_PS58
+This is ending 1. #loc:test_Ending1_HFT6
 ->END
 
 ==Ending2
-This is ending 2. #loc:test_Ending2_9H0L
+This is ending 2. #loc:test_Ending2_TPZG
 ->END

@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Specialized;
-using System.Dynamic;
 using System.Text;
 using System.Text.RegularExpressions;
 using Ink;
@@ -16,7 +13,7 @@ namespace InkLocaliser
             public bool retagAll = false;
             public bool debugRetagFiles = true; // Write retags to .ink.txt, not just .ink
         }
-        private Options _options;
+                private Options _options;
 
         protected struct TagInsert {
             public Text text;
@@ -176,7 +173,7 @@ namespace InkLocaliser
 
         private void AddString(string locID, string value) {
             _stringKeys.Add(locID);
-            _stringValues[locID]=value;
+            _stringValues[locID]=value.Trim();
         }
 
         private bool InsertTagsToFiles() {
@@ -311,7 +308,7 @@ namespace InkLocaliser
                 }
 
                 if ((inTag>0) && (sibling is Text)) {
-                    tags.Add(((Text)sibling).text);
+                    tags.Add(((Text)sibling).text.Trim());
                 } 
             }
             return tags;
