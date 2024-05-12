@@ -48,7 +48,7 @@ namespace InkLocaliser
                     var newLine = $"{locID},\"{textValue}\"";
                     if (_oldRest.TryGetValue(locID, out var rest)) {
                         if (rest!=null)
-                            newLine+=_oldRest[locID];
+                            newLine+=","+_oldRest[locID];
                     }
                     output.AppendLine(newLine);
                 }

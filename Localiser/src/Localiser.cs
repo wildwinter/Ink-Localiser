@@ -117,7 +117,7 @@ namespace InkLocaliser
 
             // ---- Scan for existing IDs ----
             // Build list of existing IDs (so we don't duplicate)
-            if (!_options.retagAll) { // Don't do this is we want to retag everything.
+            if (!_options.retagAll) { // Don't do this if we want to retag everything.
                 foreach(var text in validTextObjects) {
                     string? locTag = FindLocTagID(text);
                     if (locTag!=null)
@@ -133,7 +133,7 @@ namespace InkLocaliser
 
                 // Does the source already have a #loc: tag?
                 string? locID = FindLocTagID(text);
-                
+
                 // Skip if there's a tag and we aren't forcing a retag 
                 if (locID!=null && !_options.retagAll) {
                     // Add to localisation strings.
@@ -149,7 +149,6 @@ namespace InkLocaliser
                 locID = GenerateUniqueID(locPrefix); 
 
                 // Add the ID and text object to a list of things to fix up in this file.
-
                 if (!_filesTagsToInsert.ContainsKey(fileName))
                     _filesTagsToInsert[fileName] = new List<TagInsert>();
 
@@ -164,14 +163,20 @@ namespace InkLocaliser
                 AddString(locID, text.text);
             }
 
-            foreach (var locID in _stringKeys)
+            /*foreach (var locID in _stringKeys)
             {
                 Console.WriteLine($"[{locID}] {GetString(locID)}");
-            }
+            }*/
             return true;
         }
 
         private void AddString(string locID, string value) {
+
+            if (_stringKeys.Contains(locID)) {
+                Console.Error.WriteLine($"Unexpected behaviour - trying to add content for a string named {locID}, but one already exists? Have you duplicated a tag?");
+                return;
+            }
+            
             _stringKeys.Add(locID);
             _stringValues[locID]=value.Trim();
         }
@@ -297,7 +302,10 @@ namespace InkLocaliser
                 }
                 if (!afterText)
                     continue;
-                
+                    
+                if (sibling is Text && ((Text)sibling).text=="\n")
+                    break;
+
                 if (sibling is Tag) {
                     var tag = (Tag)sibling;
                     if (tag.isStart)
