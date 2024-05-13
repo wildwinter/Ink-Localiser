@@ -1,4 +1,4 @@
-﻿== Bumf
+== Bumf
 
 This is in an included file. #id:included1_Bumf_9CGX #Bumf
 

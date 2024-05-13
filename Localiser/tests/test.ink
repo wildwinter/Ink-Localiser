@@ -1,4 +1,4 @@
-﻿INCLUDE included1.ink
+INCLUDE included1.ink
 VAR something = "fff"
 
 -> Intro

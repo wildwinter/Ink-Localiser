@@ -1,4 +1,4 @@
-﻿-> Start
+-> Start
 === Start
 This is my ink file. #id:demo_Start_6D7L
 What do you think? #id:demo_Start_OEPX
