@@ -43,18 +43,22 @@ namespace InkLocaliser
             // ----- Figure out which files to include -----
             List<string> inkFiles = new();
 
-            try {
-                string folderPath = _options.folder;
-                if (String.IsNullOrWhiteSpace(folderPath))
-                    folderPath = Environment.CurrentDirectory;
-                
+            string folderPath = _options.folder;
+            if (String.IsNullOrWhiteSpace(folderPath))
+                folderPath = Environment.CurrentDirectory;
+            folderPath = System.IO.Path.GetFullPath(folderPath);
+
+            // Need this for InkParser includes and such.
+            Directory.SetCurrentDirectory(folderPath);
+
+            try {                
                 DirectoryInfo dir = new DirectoryInfo(folderPath);
                 foreach (FileInfo file in dir.GetFiles(_options.filePattern, SearchOption.AllDirectories))
                 {
                     inkFiles.Add(file.FullName);
                 }
             } catch (Exception ex) {
-                Console.Error.WriteLine($"Error finding files to process: {_options.folder}/{_options.filePattern}: " + ex.Message);
+                Console.Error.WriteLine($"Error finding files to process: {folderPath}: " + ex.Message);
                 return false;
             }
 

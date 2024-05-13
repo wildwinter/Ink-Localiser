@@ -10,9 +10,9 @@ foreach (var arg in args)
     if (arg.Equals("--retag"))
         options.retag = true;
     else if (arg.StartsWith("--folder="))
-        options.folder = arg.Substring(8);
+        options.folder = arg.Substring(9);
     else if (arg.StartsWith("--filePattern="))
-        options.filePattern = arg.Substring(13);
+        options.filePattern = arg.Substring(14);
     else if (arg.StartsWith("--csv="))
         csvOptions.outputFilePath = arg.Substring(6);
     else if (arg.StartsWith("--json="))
