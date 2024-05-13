@@ -10,9 +10,9 @@ A normal line. #loc:test_Intro_7N83 // What about this comment?
     ~something = "HelloInAVar."
     Something inside a choice is this hard. #loc:test_Intro_2AFA
 *[Test2 #loc:test_Intro_AB0U #tagish]
-    Buckles. #loc:test_Intro_WJ1D
-    Something else inside a choice2. #loc:test_Intro_E6Y3
-    Booyah. #loc:test_Intro_ZZOT
+    Buckles. #loc:test_Intro_L6XU
+    Something else inside a choice2. #loc:test_Intro_RMLF
+    Booyah. #loc:test_Intro_5KKB
 -
 Carry on. #loc:test_Intro_DTJ6
 
@@ -22,7 +22,7 @@ Let's do some branching - "do quotes and, commas work?" ("" ,,): #loc:test_Intro
 = Branch
 Here's a branch. #loc:test_Intro_Branch_P9Q5 #tagBranch // Or this comment?
 
-Some var \{something\} work for errors? #loc:test_Intro_Branch_JRHG
+Some var \{something\} work for errors? #loc:test_Intro_Branch_8ZKK
 
 ~temp tempVar = 10
 ~ tempVar = tempVar+1

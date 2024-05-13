@@ -40,7 +40,7 @@ namespace InkLocaliser
 
         public bool Run() {
 
-            // ----- Figure out which files to inclues =====
+            // ----- Figure out which files to include -----
             List<string> inkFiles = new();
 
             try {
@@ -58,6 +58,7 @@ namespace InkLocaliser
                 return false;
             }
 
+            // ----- For each file... -----
             foreach(var inkFile in inkFiles) {
                 
                 var content = _fileHandler.LoadInkFileContents(inkFile);
@@ -72,27 +73,31 @@ namespace InkLocaliser
                     return false;
                 }
 
+                // Go through the parsed story extracting existing localised lines, and lines still to be localised...
                 if (!ProcessStory(story))
                     return false;
             }
 
+            // If new tags need to be added, add them now.
             if (!InsertTagsToFiles())
                 return false;
 
             return true;
         }
 
-        public string GetString(string locID) {
-            return _stringValues[locID];
-        }
-
+        // List all the locIDs for every string we found, in order.
         public IList<string> GetStringKeys() {
             return _stringKeys;
         }
 
+        // Return the text of a string, by locID
+        public string GetString(string locID) {
+            return _stringValues[locID];
+        }
+
         private bool ProcessStory(Story story) {
                 
-            HashSet<string> newFileIDs = new();
+            HashSet<string> newFilesVisited = new();
 
             // ---- Find all the things we should localise ----
             List<Text> validTextObjects = new List<Text>();
@@ -126,13 +131,13 @@ namespace InkLocaliser
                 if (_filesVisited.Contains(fileID)) {
                     continue;
                 }
-                newFileIDs.Add(fileID);
+                newFilesVisited.Add(fileID);
 
                 validTextObjects.Add(text);
             }
 
-            if (newFileIDs.Count>0)
-                _filesVisited.UnionWith(newFileIDs);
+            if (newFilesVisited.Count>0)
+                _filesVisited.UnionWith(newFilesVisited);
 
             // ---- Scan for existing IDs ----
             // Build list of existing IDs (so we don't duplicate)
@@ -155,7 +160,7 @@ namespace InkLocaliser
 
                 // Skip if there's a tag and we aren't forcing a retag 
                 if (locID!=null && !_options.retag) {
-                    // Add to localisation strings.
+                    // Add existing string to localisation strings.
                     AddString(locID, text.text);
                     continue;
                 }
@@ -170,7 +175,6 @@ namespace InkLocaliser
                 // Add the ID and text object to a list of things to fix up in this file.
                 if (!_filesTagsToInsert.ContainsKey(fileName))
                     _filesTagsToInsert[fileName] = new List<TagInsert>();
-
                 var insert = new TagInsert
                 {
                     text = text,
@@ -178,14 +182,10 @@ namespace InkLocaliser
                 };
                 _filesTagsToInsert[fileName].Add(insert);
 
-                 // Add to localisation strings.
+                 // Add new string to localisation strings.
                 AddString(locID, text.text);
             }
 
-            /*foreach (var locID in _stringKeys)
-            {
-                Console.WriteLine($"[{locID}] {GetString(locID)}");
-            }*/
             return true;
         }
 
@@ -196,10 +196,12 @@ namespace InkLocaliser
                 return;
             }
             
+            // Keeping the order of strings.
             _stringKeys.Add(locID);
             _stringValues[locID]=value.Trim();
         }
 
+        // Go through every Ink file that needs a tag insertion, and insert!
         private bool InsertTagsToFiles() {
 
             foreach (var (fileName, workList) in _filesTagsToInsert) {
@@ -214,6 +216,7 @@ namespace InkLocaliser
             return true;
         }
 
+        // Do the tag inserts for one specific file.
         private bool InsertTagsToFile(string fileName, List<TagInsert> workList) {
 
             try {             
@@ -254,8 +257,6 @@ namespace InkLocaliser
                     }
                     
                     lines[lineNumber] = newLine;
-                    
-                    //Console.WriteLine($"Trying to add new tag for text:{item.text.text} at position {charPos} line:\n{lines[lineNumber]}");
                 }
 
                 // Write out to the input file.
@@ -277,11 +278,9 @@ namespace InkLocaliser
         private bool IsTextTag(Text text) {
 
             int inTag = 0;
-
             foreach (var sibling in text.parent.content) {
-                if (sibling==text) {
+                if (sibling==text)
                     break;
-                }
                 if (sibling is Tag) {
                     var tag = (Tag)sibling;
                     if (tag.isStart)
@@ -299,7 +298,7 @@ namespace InkLocaliser
             if (tags.Count>0) {
                 foreach(var tag in tags) {
                     if (tag.StartsWith(TAG_LOC)) {
-                        return tag.Substring(4);
+                        return tag.Substring(TAG_LOC.Length);
                     }
                 }
             }
