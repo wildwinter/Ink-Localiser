@@ -2,11 +2,11 @@
 
 -> Intro
 == Intro
-This is a totally different file. #loc:test2_Intro_JQHE
-*[Is it working? #loc:test2_Intro_D7R9]
-    Maybe. #loc:test2_Intro_A7MG
-*[Or not... #loc:test2_Intro_0HMD]
-    Or not. #loc:test2_Intro_R48T
+This is a totally different file. #id:test2_Intro_9JBZ
+*[Is it working? #id:test2_Intro_EKD9]
+    Maybe. #id:test2_Intro_Y3DM
+*[Or not... #id:test2_Intro_ICNL]
+    Or not. #id:test2_Intro_HNF9
 -
-Okay? #loc:test2_Intro_YE0K
+Okay? #id:test2_Intro_W35Y
 -> END

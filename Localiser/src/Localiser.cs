@@ -7,7 +7,7 @@ namespace InkLocaliser
 {
     public class Localiser {
 
-        private static string TAG_LOC = "loc:";
+        private static string TAG_LOC = "id:";
         private static bool DEBUG_RETAG_FILES = false;
 
         public class Options {
@@ -151,11 +151,11 @@ namespace InkLocaliser
 
             // ---- Sort out IDs ----
             // Now we've got our list of text, let's iterate through looking for IDs, and create them when they're missing.
-            // IDs are stored as tags in the form #loc:file_knot_stitch_xxxx
+            // IDs are stored as tags in the form #id:file_knot_stitch_xxxx
 
             foreach(var text in validTextObjects) {
 
-                // Does the source already have a #loc: tag?
+                // Does the source already have a #id: tag?
                 string? locID = FindLocTagID(text);
 
                 // Skip if there's a tag and we aren't forcing a retag 
@@ -234,9 +234,9 @@ namespace InkLocaliser
                     string newLine = "";
 
                     if (oldLine.Contains($"#{TAG_LOC}")) {
-                        // Is there already a tag called Loc: in there? In which case, we just want to replace that.
+                        // Is there already a tag called #id: in there? In which case, we just want to replace that.
 
-                        // Regex pattern to find "#loc:" followed by any alphanumeric characters or underscores
+                        // Regex pattern to find "#id:" followed by any alphanumeric characters or underscores
                         string pattern = $@"(#{TAG_LOC})\w+";
 
                         // Replace the matched text

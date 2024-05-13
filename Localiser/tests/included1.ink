@@ -1,13 +1,13 @@
 ﻿== Bumf
 
-This is in an included file. #loc:included1_Bumf_08CD #Bumf
+This is in an included file. #id:included1_Bumf_9CGX #Bumf
 
-* [Just so you know #loc:included1_Bumf_2G01]
-+ [Includes work. #loc:included1_Bumf_VXZ6]
+* [Just so you know #id:included1_Bumf_ZCUM]
++ [Includes work. #id:included1_Bumf_RC76]
 -
-Bah! #loc:included1_Bumf_39UQ
+Bah! #id:included1_Bumf_75Z5
 -> DONE
 
 == Nuget
-Testing a nuget. #loc:included1_Nuget_5IHO
+Testing a nuget. #id:included1_Nuget_3ENY
 -> Intro.Branch
