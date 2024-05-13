@@ -23,7 +23,7 @@ The tool also optionally exports CSV or JSON files containing all the IDs and th
 Each time the tool is run, it preserves the old IDs, just adding them to any newly appeared lines.
 
 So for example, take this source file:
-![Source Ink File](Localiser/docs/demo-original.png)
+![Source Ink File](Localiser/docs/demo-plain.png)
 
 After the tool is run, the source file is rewritten like this:
 ![Tagged Ink File](Localiser/docs/demo-tagged.png)
