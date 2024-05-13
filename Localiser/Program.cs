@@ -19,7 +19,7 @@ foreach (var arg in args)
         jsonOptions.outputFilePath = arg.Substring(7);
     else if (arg.Equals("--help") || arg.Equals("-h")) {
         Console.WriteLine("Ink Localiser");
-        Console.WriteLine("Options:");
+        Console.WriteLine("Arguments:");
         Console.WriteLine("  --folder=<folder> - Root folder to scan for Ink files to localise, relative to working dir.");
         Console.WriteLine("                      e.g. --folder=inkFiles/");
         Console.WriteLine("                      Default is the current working dir.");
