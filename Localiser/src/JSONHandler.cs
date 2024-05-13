@@ -6,7 +6,7 @@ namespace InkLocaliser
     public class JSONHandler {
 
         public class Options {
-            public string outputFilePath = "strings.json";
+            public string outputFilePath = "";
         }
 
         private Options _options;
@@ -21,8 +21,6 @@ namespace InkLocaliser
 
             string outputFilePath = Path.GetFullPath(_options.outputFilePath);
 
-            Console.WriteLine($"Writing strings to {outputFilePath}...");
-
             try {
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 Dictionary<string, string> entries = new();
@@ -33,7 +31,6 @@ namespace InkLocaliser
                 string fileContents = JsonSerializer.Serialize(entries, options);
 
                 File.WriteAllText(outputFilePath, fileContents, Encoding.UTF8);
-                Console.WriteLine($"Written {_localiser.GetStringKeys().Count} strings.");
             }
             catch (Exception ex) {
                  Console.Error.WriteLine($"Error writing out JSON file {outputFilePath}: " + ex.Message);

@@ -11,8 +11,11 @@ namespace InkLocaliser
         private static bool DEBUG_RETAG_FILES = false;
 
         public class Options {
-            public bool retagAll = false;
-            public string folderPath = "";
+            // If true, retag everything.
+            public bool retag = false;
+            // Root folder. If empty, uses current working dir.
+            public string folder = "";
+            // Files to include. Will search subfolders of the working dir.
             public string filePattern = "*.ink";
         }
         private Options _options;
@@ -41,17 +44,17 @@ namespace InkLocaliser
             List<string> inkFiles = new();
 
             try {
-                string folderPath = _options.folderPath;
+                string folderPath = _options.folder;
                 if (String.IsNullOrWhiteSpace(folderPath))
                     folderPath = Environment.CurrentDirectory;
                 
                 DirectoryInfo dir = new DirectoryInfo(folderPath);
-                foreach (FileInfo file in dir.GetFiles(_options.filePattern))
+                foreach (FileInfo file in dir.GetFiles(_options.filePattern, SearchOption.AllDirectories))
                 {
                     inkFiles.Add(file.FullName);
                 }
             } catch (Exception ex) {
-                Console.Error.WriteLine($"Error finding files to process: {_options.folderPath}/{_options.filePattern}: " + ex.Message);
+                Console.Error.WriteLine($"Error finding files to process: {_options.folder}/{_options.filePattern}: " + ex.Message);
                 return false;
             }
 
@@ -133,7 +136,7 @@ namespace InkLocaliser
 
             // ---- Scan for existing IDs ----
             // Build list of existing IDs (so we don't duplicate)
-            if (!_options.retagAll) { // Don't do this if we want to retag everything.
+            if (!_options.retag) { // Don't do this if we want to retag everything.
                 foreach(var text in validTextObjects) {
                     string? locTag = FindLocTagID(text);
                     if (locTag!=null)
@@ -151,7 +154,7 @@ namespace InkLocaliser
                 string? locID = FindLocTagID(text);
 
                 // Skip if there's a tag and we aren't forcing a retag 
-                if (locID!=null && !_options.retagAll) {
+                if (locID!=null && !_options.retag) {
                     // Add to localisation strings.
                     AddString(locID, text.text);
                     continue;

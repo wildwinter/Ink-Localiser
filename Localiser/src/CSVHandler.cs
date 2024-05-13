@@ -5,7 +5,7 @@ namespace InkLocaliser
     public class CSVHandler {
 
         public class Options {
-            public string outputFilePath = "strings.csv";
+            public string outputFilePath = "";
         }
 
         private Options _options;
@@ -20,8 +20,6 @@ namespace InkLocaliser
 
             string outputFilePath = Path.GetFullPath(_options.outputFilePath);
 
-            Console.WriteLine($"Writing strings to {outputFilePath}...");
-
             try {
                 StringBuilder output = new();
                 output.AppendLine("ID,Text");
@@ -35,7 +33,6 @@ namespace InkLocaliser
 
                 string fileContents = output.ToString();
                 File.WriteAllText(outputFilePath, fileContents, Encoding.UTF8);
-                Console.WriteLine($"Written {_localiser.GetStringKeys().Count} strings.");
             }
             catch (Exception ex) {
                  Console.Error.WriteLine($"Error writing out CSV file {outputFilePath}: " + ex.Message);
