@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Version>0.0.1.0</Version>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ink_compiler">
+      <HintPath>../Lib/Inklecate/ink_compiler.dll</HintPath>
+    </Reference>
+    <Reference Include="ink-engine-runtime">
+      <HintPath>../Lib/Inklecate/ink-engine-runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

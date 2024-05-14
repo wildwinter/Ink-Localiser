@@ -1,5 +1,7 @@
-INCLUDE included1.ink
+﻿INCLUDE included1.ink
 VAR something = "fff"
+
+Top level? #id:test_UZ4B
 
 -> Intro
 

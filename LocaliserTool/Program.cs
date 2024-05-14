@@ -35,6 +35,11 @@ foreach (var arg in args)
         Console.WriteLine("  --retag - Regenerate all localisation tag IDs, rather than keep old IDs.");
         return 0;
     }
+    else if (arg.Equals("--test")) {
+        options.folder="tests";
+        csvOptions.outputFilePath="tests/strings.csv";
+        jsonOptions.outputFilePath="tests/strings.json";
+    }
 }
 
 // ----- Parse Ink, Update Tags, Build String List -----

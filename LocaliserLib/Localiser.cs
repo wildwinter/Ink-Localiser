@@ -33,22 +33,27 @@ namespace InkLocaliser
 
         private List<string> _stringKeys = new();
         private Dictionary<string, string> _stringValues = new();
+        private string _previousCWD="";
 
         public Localiser(Options? options = null) {
             _options = options ?? new Options();
         }
-
         public bool Run() {
+
+            bool success = true;
 
             // ----- Figure out which files to include -----
             List<string> inkFiles = new();
 
+            // We'll restore this later.
+            _previousCWD = Environment.CurrentDirectory;
+
             string folderPath = _options.folder;
             if (String.IsNullOrWhiteSpace(folderPath))
-                folderPath = Environment.CurrentDirectory;
+                folderPath = _previousCWD;
             folderPath = System.IO.Path.GetFullPath(folderPath);
 
-            // Need this for InkParser includes and such.
+            // Need this for InkParser to work properly with includes and such.
             Directory.SetCurrentDirectory(folderPath);
 
             try {                
@@ -59,34 +64,47 @@ namespace InkLocaliser
                 }
             } catch (Exception ex) {
                 Console.Error.WriteLine($"Error finding files to process: {folderPath}: " + ex.Message);
-                return false;
+                success=false;
             }
 
             // ----- For each file... -----
-            foreach(var inkFile in inkFiles) {
-                
-                var content = _fileHandler.LoadInkFileContents(inkFile);
-                if (content==null)
-                    return false;
+            if (success) {
+                foreach(var inkFile in inkFiles) {
+                    
+                    var content = _fileHandler.LoadInkFileContents(inkFile);
+                    if (content==null) {
+                        success = false;
+                        break;
+                    }
 
-                InkParser parser = new InkParser(content, inkFile, OnError, _fileHandler);
+                    InkParser parser = new InkParser(content, inkFile, OnError, _fileHandler);
 
-                var story = parser.Parse();
-                if (_inkParseErrors) {
-                    Console.Error.WriteLine($"Error parsing ink file.");
-                    return false;
+                    var story = parser.Parse();
+                    if (_inkParseErrors) {
+                        Console.Error.WriteLine($"Error parsing ink file.");
+                        success = false;
+                        break;
+                    }
+
+                    // Go through the parsed story extracting existing localised lines, and lines still to be localised...
+                    if (!ProcessStory(story)) {
+                        success=false;
+                        break;
+                    }
                 }
-
-                // Go through the parsed story extracting existing localised lines, and lines still to be localised...
-                if (!ProcessStory(story))
-                    return false;
             }
 
             // If new tags need to be added, add them now.
-            if (!InsertTagsToFiles())
-                return false;
+            if (success) {
+                if (!InsertTagsToFiles()) {
+                    success=false;
+                }
+            }
 
-            return true;
+            // Restore current directory.
+            Directory.SetCurrentDirectory(_previousCWD);
+
+            return success;
         }
 
         // List all the locIDs for every string we found, in order.

@@ -4,6 +4,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <Version>0.0.1.0</Version>
     <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifiers>osx-arm64;osx-x64;win-x64;win-x86</RuntimeIdentifiers>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -13,12 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="ink_compiler">
-      <HintPath>./Lib/Inklecate/ink_compiler.dll</HintPath>
-    </Reference>
-    <Reference Include="ink-engine-runtime">
-      <HintPath>./Lib/Inklecate/ink-engine-runtime.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="../LocaliserLib/LocaliserLib.csproj" />
   </ItemGroup>
 
 </Project>
