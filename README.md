@@ -29,7 +29,7 @@ This tool takes a set of raw ink files, scans them for lines of text, and genera
 
 This means that every line of meaninful text in the Ink file now has a unique ID attached, as a tag. That means you can use that ID for localisation or for triggering the correct audio.
 
-The tool also optionally exports CSV or JSON files containing all the IDs and their associated text - which can then be used as a basis for localisation.
+The tool also optionally exports CSV or JSON files containing the IDs and their associated text content from all the processed Ink files - which can then be used as a basis for localisation.
 
 Each time the tool is run, it preserves the old IDs, just adding them to any newly appeared lines.
 
@@ -71,13 +71,13 @@ Look for every Ink file starting with `start` in the `inkFiles` folder, process 
 
 * `--csv=<csvFile>`
 
-    Path to a CSV file to export, relative to working dir.
+    Path to a CSV file to export all the strings to, relative to working dir.
     e.g. `--csv=output/strings.csv`
     Default is empty, so no CSV file will be exported.
 
 * `--json=<jsonFile>`
 
-    Path to a JSON file to export, relative to working dir.
+    Path to a JSON file to export all the strings to, relative to working dir.
     e.g. `--json=output/strings.json`
     Default is empty, so no JSON file will be exported.
 
