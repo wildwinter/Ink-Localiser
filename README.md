@@ -6,6 +6,17 @@
 
 ![Generated CSV File](docs/demo-csv.png)
 
+## Contents
+- [Overview](#overview)
+- [Command-Line Tool](#command-line-tool)
+- [Use in Development](#use-in-development)
+- [The ID format](#the-id-format)
+- [Releases](#releases)
+- [Caveats](#caveats)
+- [Under the Hood](#under-the-hood)
+- [Acknowledgements](#acknowledgements)
+- [License and Attribution](#license-and-attribution)
+
 ## Overview
 
 Inkle's Ink language is a great flow language for stitching together narrative-based games.
