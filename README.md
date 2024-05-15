@@ -1,6 +1,6 @@
 # Ink-Localiser
 
-**A simple tool to make it easier to localise Ink projects.**
+**A simple tool to make it easier to localise or attach voice lines to Ink projects.**
 
 ![Tagged Ink File](docs/demo-tagged.png)
 
@@ -23,11 +23,11 @@ Inkle's Ink language is a great flow language for stitching together narrative-b
 
 Because it's designed to mash small fragments of text together, it's not designed for localisation, or for associating lines of spoken audio to the source file.
 
-But many studios don't use the more advanced text-manipulation features of Ink - they just use it for creating a flow of complete lines of text. It's a great solution for titles that care about branching dialogue. This means there's a problem - how do you translate each line? And how to you play the right audio for each line?
+But many studios don't use the more advanced text-manipulation features of Ink - they just use it for creating a flow of complete lines of text. It's a great solution for titles that care about branching dialogue. This means there's a problem - how do you translate each line? And how do you play the right audio for each line?
 
 This tool takes a set of raw ink files, scans them for lines of text, and generates a localisation ID to associate with each line. It writes the ink files back out again with these IDs in the form of Ink tags at the end of each line.
 
-This means that every line of meaninful text in the Ink file now has a unique ID attached, as a tag. That means you can use that ID for localisation or for triggering the correct audio.
+This means that every line of meaningful text in the Ink file now has a unique ID attached, as a tag. That means you can use that ID for localisation or for triggering the correct audio.
 
 The tool also optionally exports CSV or JSON files containing the IDs and their associated text content from all the processed Ink files - which can then be used as a basis for localisation.
 
@@ -98,7 +98,7 @@ At runtime, load your Ink content, and also load the appropriate JSON or CSV (wh
 
 Use your Ink flow as normal, but when you progress the story instead of asking Ink for the text content at the current line or option, ask for the list of tags! 
 
-Look for any tag starting with #id:, parse the ID from that tag yourself, and ask your CSV or JSON file for the actual string.
+Look for any tag starting with #id:, parse the ID from that tag yourself, and ask your CSV or JSON file for the actual string. You can use the same ID to trigger an appropriate voice line, if you've recorded one.
 
 In other words - during runtime, just use Ink for logic, not for content. Grab the tags from Ink, and use your external text file (or WAV filenames!) as appropriate for the relevant language.
 
