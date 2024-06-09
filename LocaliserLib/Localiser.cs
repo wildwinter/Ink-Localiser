@@ -140,13 +140,6 @@ namespace InkLocaliser
                     continue;
                 }
 
-                // More than one text chunk on a line? We only deal with individual lines of stuff.
-                if (lastLineNumber == text.debugMetadata.startLineNumber) {
-                    Console.Error.WriteLine($"Error in line {lastLineNumber} - two chunks of text when localiser can only work with one per line.");
-                    return false;
-                }
-                lastLineNumber = text.debugMetadata.startLineNumber;
-
                 // Have we already visited this source file i.e. is it in an include we've seen before?
                 // If so, skip.
                 string fileID = System.IO.Path.GetFileNameWithoutExtension(text.debugMetadata.fileName);
@@ -154,6 +147,13 @@ namespace InkLocaliser
                     continue;
                 }
                 newFilesVisited.Add(fileID);
+
+                // More than one text chunk on a line? We only deal with individual lines of stuff.
+                if (lastLineNumber == text.debugMetadata.startLineNumber) {
+                    Console.Error.WriteLine($"Error in file {fileID} line {lastLineNumber} - two chunks of text when localiser can only work with one per line.");
+                    return false;
+                }
+                lastLineNumber = text.debugMetadata.startLineNumber;
 
                 validTextObjects.Add(text);
             }

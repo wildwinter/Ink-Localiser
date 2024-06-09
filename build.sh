@@ -2,7 +2,7 @@
 
 rm -rf ./publish/*
 
-version="0.0.1.0"
+version="0.0.1.1"
 targets=("osx-arm64" "osx-x64" "win-x86" "win-x64")
 
 for target in "${targets[@]}"; do
