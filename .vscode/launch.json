@@ -6,9 +6,14 @@
     "configurations": [
         {
             "name": "C#: LocaliserTool",
-            "type": "dotnet",
+            "type": "coreclr",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/LocaliserTool/LocaliserTool.csproj"
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/LocaliserTool/bin/Debug/net8.0/osx-arm64/LocaliserTool.dll",
+            "args": ["--test"],
+            "cwd": "${workspaceFolder}/LocaliserTool",
+            "stopAtEntry": false,
+            "console": "internalConsole"
         }
     ]
 }
