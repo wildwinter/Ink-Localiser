@@ -9,6 +9,7 @@
 ## Contents
 - [Overview](#overview)
 - [Command-Line Tool](#command-line-tool)
+- [Limitations](#limitations)
 - [Use in Development](#use-in-development)
 - [The ID format](#the-id-format)
 - [Releases](#releases)
@@ -89,6 +90,30 @@ Look for every Ink file starting with `start` in the `inkFiles` folder, process 
 
     This help!
 
+## Limitations
+As said above, Ink is fully capable of stitching together fragments of sentences, like so:
+```
+{shuffle:
+- Here is a sentence <>
+- Here is a different sentence <>
+}
+that will end up saying the same thing.
+
+* I talked about sailing ships [] and the preponderance of seamonsters.
+    -> MarineLife
+* I didn't like monkeys [at all.] in any way whatsoever.
+    -> MonkeyBusiness
+```
+
+This splicing of text fragments **is not supported by the Localiser**, as the Localiser is designed for two main use cases.
+
+* **Producing strings for localisation**. It is really hard as a translator to work stitching text fragments together, as English works very differently from other languages. So if you want your game localised, text fragments are, in general, not a good idea.
+* **Producing strings for audio recording**. It is almost impossible to splice together different sections of sentences for an actor to say, so again, we shouldn't be using text fragments.
+
+Ink is still extremely powerful and we use it for lots of other flow use-cases. But for these reasons if you have multiple text fragments on a single line the Localiser will complain with an error.
+
+(It should also complain for <> as well but I haven't got around to adding that behaviour.)
+
 ## Use in Development
 Develop your Ink as normal! Treat that as the 'master copy' of your game, the source of truth for the flow and your primary language content.
 
@@ -101,6 +126,50 @@ Use your Ink flow as normal, but when you progress the story instead of asking I
 Look for any tag starting with #id:, parse the ID from that tag yourself, and ask your CSV or JSON file for the actual string. You can use the same ID to trigger an appropriate voice line, if you've recorded one.
 
 In other words - during runtime, just use Ink for logic, not for content. Grab the tags from Ink, and use your external text file (or WAV filenames!) as appropriate for the relevant language.
+
+**Pseudocode**:
+```
+var story = new Story(storyJsonAsset);
+var stringTable = new StringTable(tableCSVAsset);
+
+while (story.canContinue) {
+
+    var textContent = story.Continue();
+    
+    // we Can actually IGNORE the textContent, we want the LOCALISED version, let's find it:
+
+    // This function looks for a tag like #id:Main_Intro_45EW
+    var stringID = extractIDFromTags(story.currentTags);
+
+    var localisedTextContent = stringTable.GetStringByID(stringID);
+
+    // We use that localisedTextContent instead!
+    DisplayTextSomehow(localisedTextContent);
+
+    // We could also trigger some dialogue...
+    PlayAnAudioFileWithID(stringID);
+
+    // Now let's do choices
+    if(story.currentChoices.Count > 0)
+    {
+        for (int i = 0; i < story.currentChoices.Count; ++i) {
+            Choice choice = story.currentChoices [i];
+
+            var choiceText = choice.text;
+            // Again, we can IGNORE choiceText...
+
+            var choiceStringID = extractIDFromTags(choice.tags);
+
+            var localisedChoiceTextContent = stringTable.GetStringByID(choiceStringID);
+
+            // We use that localisedChoiceTextContent instead!
+            DisplayChoiceTextSomehow(localisedChoiceTextContent);
+
+        }
+    }
+}
+```
+
 
 ## The ID format
 
