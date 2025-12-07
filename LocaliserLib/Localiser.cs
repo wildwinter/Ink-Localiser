@@ -431,7 +431,8 @@ namespace InkLocaliser
 
             public string LoadInkFileContents(string fullFilename)
             {
-                UsedInkFiles.Add(fullFilename);
+                if (!UsedInkFiles.Contains(fullFilename))
+                    UsedInkFiles.Add(fullFilename);
                 return File.ReadAllText(fullFilename);
             }
         }
