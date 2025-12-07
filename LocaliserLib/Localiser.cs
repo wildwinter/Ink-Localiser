@@ -25,7 +25,7 @@ namespace InkLocaliser
             public string locID;
         }
 
-        private IFileHandler _fileHandler = new DefaultFileHandler();
+        private InkFileHandler _fileHandler = new InkFileHandler();
         private bool _inkParseErrors = false;
         private HashSet<string> _filesVisited = new();
         private Dictionary<string, List<TagInsert>> _filesTagsToInsert = new();
@@ -34,6 +34,8 @@ namespace InkLocaliser
         private List<string> _stringKeys = new();
         private Dictionary<string, string> _stringValues = new();
         private string _previousCWD="";
+
+        public List<string> UsedInkFiles {get{return _fileHandler.UsedInkFiles;}}
 
         public Localiser(Options? options = null) {
             _options = options ?? new Options();
@@ -44,6 +46,7 @@ namespace InkLocaliser
 
             // ----- Figure out which files to include -----
             List<string> inkFiles = new();
+            UsedInkFiles.Clear();
 
             // We'll restore this later.
             _previousCWD = Environment.CurrentDirectory;
@@ -409,6 +412,28 @@ namespace InkLocaliser
         {
             _inkParseErrors = true;
             Console.Error.WriteLine("Ink Parse Error: "+message);
+        }
+
+        public class InkFileHandler : Ink.IFileHandler
+        {
+            public List<string> UsedInkFiles = new List<string>();
+
+            public InkFileHandler()
+            {
+            }
+
+            public string ResolveInkFilename(string includeName)
+            {
+                var workingDir = Directory.GetCurrentDirectory();
+                var fullRootInkPath = System.IO.Path.Combine(workingDir, includeName);
+                return fullRootInkPath;
+            }
+
+            public string LoadInkFileContents(string fullFilename)
+            {
+                UsedInkFiles.Add(fullFilename);
+                return File.ReadAllText(fullFilename);
+            }
         }
     }
 }
