@@ -9,6 +9,8 @@ foreach (var arg in args)
 {
     if (arg.Equals("--retag"))
         options.retag = true;
+    else if (arg.ToLower().Equals("--shortids"))
+        options.shortIDs = true;
     else if (arg.StartsWith("--folder="))
         options.folder = arg.Substring(9);
     else if (arg.StartsWith("--filePattern="))
@@ -17,7 +19,9 @@ foreach (var arg in args)
         csvOptions.outputFilePath = arg.Substring(6);
     else if (arg.StartsWith("--json="))
         jsonOptions.outputFilePath = arg.Substring(7);
-    else if (arg.Equals("--help") || arg.Equals("-h")) {
+    else if (arg.StartsWith("--origins="))
+        jsonOptions.originsFilePath = arg.Substring(10);
+    else {
         Console.WriteLine("Ink Localiser");
         Console.WriteLine("Arguments:");
         Console.WriteLine("  --folder=<folder> - Root folder to scan for Ink files to localise, relative to working dir.");
@@ -32,13 +36,12 @@ foreach (var arg in args)
         Console.WriteLine("  --json=<jsonFile> - Path to a JSON file to export, relative to working dir.");
         Console.WriteLine("                      e.g. --json=output/strings.json");
         Console.WriteLine("                      Default is empty, so no JSON file will be exported.");
+        Console.WriteLine("  --origins=<jsonFile> - Path to a JSON file of line origins to export, relative to working dir.");
+        Console.WriteLine("                      e.g. --origins=output/origins.json");
+        Console.WriteLine("                      Default is empty, so no JSON file will be exported.");
         Console.WriteLine("  --retag - Regenerate all localisation tag IDs, rather than keep old IDs.");
+        Console.WriteLine("  --shortIDs - Use short-form IDs.");
         return 0;
-    }
-    else if (arg.Equals("--test")) {
-        options.folder="tests";
-        csvOptions.outputFilePath="tests/strings.csv";
-        jsonOptions.outputFilePath="tests/strings.json";
     }
 }
 
@@ -62,9 +65,10 @@ if (!String.IsNullOrEmpty(csvOptions.outputFilePath))
 }
 
 // ----- JSON Output -----
+var jsonHandler = new JSONHandler(localiser, jsonOptions);
+
 if (!String.IsNullOrEmpty(jsonOptions.outputFilePath))
 {
-    var jsonHandler = new JSONHandler(localiser, jsonOptions);
     if (!jsonHandler.WriteStrings()) {
         Console.Error.WriteLine("Database not written.");
         return -1;
@@ -72,4 +76,12 @@ if (!String.IsNullOrEmpty(jsonOptions.outputFilePath))
     Console.WriteLine($"JSON file written: {jsonOptions.outputFilePath}");
 }
 
+if (!String.IsNullOrEmpty(jsonOptions.originsFilePath))
+{
+    if (!jsonHandler.WriteOrigins()) {
+        Console.Error.WriteLine("Origins not written.");
+        return -1;
+    }
+    Console.WriteLine($"Origins file written: {jsonOptions.originsFilePath}");
+}
 return 0;

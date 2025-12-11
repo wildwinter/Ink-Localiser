@@ -17,6 +17,8 @@ namespace InkLocaliser
             public string folder = "";
             // Files to include. Will search subfolders of the working dir.
             public string filePattern = "*.ink";
+            // Use ShortIDs?
+            public bool shortIDs = false;
         }
         private Options _options;
 
@@ -24,6 +26,13 @@ namespace InkLocaliser
             public Text text;
             public string locID;
         }
+
+        public struct Origin
+        {
+            public string File;
+            public int LineNumber;
+        }
+        private Dictionary<string, Origin> _origins = new();
 
         private InkFileHandler _fileHandler = new InkFileHandler();
         private bool _inkParseErrors = false;
@@ -34,8 +43,10 @@ namespace InkLocaliser
         private List<string> _stringKeys = new();
         private Dictionary<string, string> _stringValues = new();
         private string _previousCWD="";
+        private string _folder = "";
 
         public List<string> UsedInkFiles {get{return _fileHandler.UsedInkFiles;}}
+        public Dictionary<string, Origin> LineOrigins {get {return _origins;}}
 
         public Localiser(Options? options = null) {
             _options = options ?? new Options();
@@ -51,24 +62,26 @@ namespace InkLocaliser
             // We'll restore this later.
             _previousCWD = Environment.CurrentDirectory;
 
-            string folderPath = _options.folder;
-            if (String.IsNullOrWhiteSpace(folderPath))
-                folderPath = _previousCWD;
-            folderPath = System.IO.Path.GetFullPath(folderPath);
+            _folder= _options.folder;
+            if (String.IsNullOrWhiteSpace(_folder))
+                _folder = _previousCWD;
+            _folder = System.IO.Path.GetFullPath(_folder);
 
             // Need this for InkParser to work properly with includes and such.
-            Directory.SetCurrentDirectory(folderPath);
+            Directory.SetCurrentDirectory(_folder);
 
             try {                
-                DirectoryInfo dir = new DirectoryInfo(folderPath);
+                DirectoryInfo dir = new DirectoryInfo(_folder);
                 foreach (FileInfo file in dir.GetFiles(_options.filePattern, SearchOption.AllDirectories))
                 {
                     inkFiles.Add(file.FullName);
                 }
             } catch (Exception ex) {
-                Console.Error.WriteLine($"Error finding files to process: {folderPath}: " + ex.Message);
+                Console.Error.WriteLine($"Error finding files to process: {_folder}: " + ex.Message);
                 success=false;
             }
+
+            _origins.Clear();
 
             // ----- For each file... -----
             if (success) {
@@ -180,6 +193,8 @@ namespace InkLocaliser
 
             foreach(var text in validTextObjects) {
 
+                var origin = new Origin{File = text.debugMetadata.fileName, LineNumber = text.debugMetadata.startLineNumber};
+                
                 // Does the source already have a #id: tag?
                 string? locID = FindLocTagID(text);
 
@@ -187,6 +202,7 @@ namespace InkLocaliser
                 if (locID!=null && !_options.retag) {
                     // Add existing string to localisation strings.
                     AddString(locID, text.text);
+                    AddOrigin(locID,origin);
                     continue;
                 }
 
@@ -209,6 +225,7 @@ namespace InkLocaliser
 
                  // Add new string to localisation strings.
                 AddString(locID, text.text);
+                AddOrigin(locID, origin);
             }
 
             return true;
@@ -224,6 +241,13 @@ namespace InkLocaliser
             // Keeping the order of strings.
             _stringKeys.Add(locID);
             _stringValues[locID]=value.Trim();
+        }
+
+        private void AddOrigin(string locID, Origin origin)
+        {
+            // Make the origin local
+            origin.File = System.IO.Path.GetRelativePath(_folder, origin.File);
+            _origins[locID] = origin;
         }
 
         // Go through every Ink file that needs a tag insertion, and insert!
@@ -386,6 +410,8 @@ namespace InkLocaliser
         private string GenerateUniqueID(string locPrefix){
             // Repeat a lot to try and get options. Should be hard to fail at this but
             // let's set a limit to stop locks.
+            if (_options.shortIDs)
+                locPrefix = "";
             for (int i=0;i<100;i++) {
                 string locID = locPrefix+GenerateID();
                 if (!_existingIDs.Contains(locID)) {
