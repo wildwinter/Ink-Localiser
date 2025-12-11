@@ -29,8 +29,10 @@ namespace InkLocaliser
 
         public struct Origin
         {
-            public string File;
-            public int LineNumber;
+            public string File { get; set; }
+            public int LineNumber { get; set; }
+            public string Knot { get; set; }
+            public string Stitch { get; set; }
         }
         private Dictionary<string, Origin> _origins = new();
 
@@ -193,7 +195,17 @@ namespace InkLocaliser
 
             foreach(var text in validTextObjects) {
 
-                var origin = new Origin{File = text.debugMetadata.fileName, LineNumber = text.debugMetadata.startLineNumber};
+                string fileName = text.debugMetadata.fileName;
+                string fileID = System.IO.Path.GetFileNameWithoutExtension(fileName);
+                string pathPrefix = fileID+"_";  
+                string locPrefix = pathPrefix+MakeLocPrefix(text, out string knot, out string stitch);
+
+                var origin = new Origin{
+                    File = text.debugMetadata.fileName, 
+                    LineNumber = text.debugMetadata.startLineNumber,
+                    Knot=knot,
+                    Stitch=stitch
+                    };
                 
                 // Does the source already have a #id: tag?
                 string? locID = FindLocTagID(text);
@@ -207,10 +219,6 @@ namespace InkLocaliser
                 }
 
                 // Generate a new ID
-                string fileName = text.debugMetadata.fileName;
-                string fileID = System.IO.Path.GetFileNameWithoutExtension(fileName);
-                string pathPrefix = fileID+"_";  
-                string locPrefix = pathPrefix+MakeLocPrefix(text);
                 locID = GenerateUniqueID(locPrefix); 
 
                 // Add the ID and text object to a list of things to fix up in this file.
@@ -394,14 +402,21 @@ namespace InkLocaliser
         }
 
         // Constructs a prefix from knot / stitch
-        private string MakeLocPrefix(Text text) {
+        private string MakeLocPrefix(Text text, out string knot, out string stitch) {
 
             string prefix = "";
+            knot = "";
+            stitch = "";
             foreach (var obj in text.ancestry) {
                 if (obj is Knot)
-                    prefix+=((Knot)obj).name+"_";
-                if (obj is Stitch)
-                    prefix+=((Stitch)obj).name+"_";
+                {
+                    knot = ((Knot)obj).name;
+                    prefix+=knot+"_";
+                }
+                if (obj is Stitch) {
+                    stitch = ((Stitch)obj).name;
+                    prefix+=stitch+"_";
+                }
             }
 
             return prefix;

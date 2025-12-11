@@ -1,162 +1,242 @@
 ﻿{
-  "test2_Intro_RNH1": {
+  "test2_Intro_UD0Z": {
     "File": "test2.ink",
-    "LineNumber": 5
+    "LineNumber": 5,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test2_Intro_WASQ": {
+  "test2_Intro_1SOW": {
     "File": "test2.ink",
-    "LineNumber": 6
+    "LineNumber": 6,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test2_Intro_QIM5": {
+  "test2_Intro_AG3D": {
     "File": "test2.ink",
-    "LineNumber": 7
+    "LineNumber": 7,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test2_Intro_SIRT": {
+  "test2_Intro_QSZ6": {
     "File": "test2.ink",
-    "LineNumber": 8
+    "LineNumber": 8,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test2_Intro_WXM2": {
+  "test2_Intro_Y0M5": {
     "File": "test2.ink",
-    "LineNumber": 9
+    "LineNumber": 9,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test2_Intro_O9W1": {
+  "test2_Intro_XXD6": {
     "File": "test2.ink",
-    "LineNumber": 11
+    "LineNumber": 11,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "included1_Bumf_63MA": {
+  "included1_Bumf_E6GQ": {
     "File": "included1.ink",
-    "LineNumber": 3
+    "LineNumber": 3,
+    "Knot": "Bumf",
+    "Stitch": ""
   },
-  "included1_Bumf_SMX8": {
+  "included1_Bumf_HWZK": {
     "File": "included1.ink",
-    "LineNumber": 5
+    "LineNumber": 5,
+    "Knot": "Bumf",
+    "Stitch": ""
   },
-  "included1_Bumf_9CKQ": {
+  "included1_Bumf_W069": {
     "File": "included1.ink",
-    "LineNumber": 6
+    "LineNumber": 6,
+    "Knot": "Bumf",
+    "Stitch": ""
   },
-  "included1_Bumf_6E5P": {
+  "included1_Bumf_7LF0": {
     "File": "included1.ink",
-    "LineNumber": 8
+    "LineNumber": 8,
+    "Knot": "Bumf",
+    "Stitch": ""
   },
-  "included1_Nuget_QASC": {
+  "included1_Nuget_CWEH": {
     "File": "included1.ink",
-    "LineNumber": 12
+    "LineNumber": 12,
+    "Knot": "Nuget",
+    "Stitch": ""
   },
-  "demo_Start_R4IZ": {
+  "demo_Start_LH5B": {
     "File": "demo.ink",
-    "LineNumber": 3
+    "LineNumber": 3,
+    "Knot": "Start",
+    "Stitch": ""
   },
-  "demo_Start_374W": {
+  "demo_Start_TL0V": {
     "File": "demo.ink",
-    "LineNumber": 4
+    "LineNumber": 4,
+    "Knot": "Start",
+    "Stitch": ""
   },
-  "demo_Start_KQBS": {
+  "demo_Start_GH24": {
     "File": "demo.ink",
-    "LineNumber": 5
+    "LineNumber": 5,
+    "Knot": "Start",
+    "Stitch": ""
   },
-  "demo_Start_9P6W": {
+  "demo_Start_TFFL": {
     "File": "demo.ink",
-    "LineNumber": 6
+    "LineNumber": 6,
+    "Knot": "Start",
+    "Stitch": ""
   },
-  "demo_Start_RJ84": {
+  "demo_Start_JIPF": {
     "File": "demo.ink",
-    "LineNumber": 8
+    "LineNumber": 8,
+    "Knot": "Start",
+    "Stitch": ""
   },
-  "demo_Start_NSJ8": {
+  "demo_Start_WHJE": {
     "File": "demo.ink",
-    "LineNumber": 9
+    "LineNumber": 9,
+    "Knot": "Start",
+    "Stitch": ""
   },
-  "demo_Start_Stitch1_5LPR": {
+  "demo_Start_Stitch1_C9A9": {
     "File": "demo.ink",
-    "LineNumber": 13
+    "LineNumber": 13,
+    "Knot": "Start",
+    "Stitch": "Stitch1"
   },
-  "demo_Start_Stitch2_2RK6": {
+  "demo_Start_Stitch2_AFLC": {
     "File": "demo.ink",
-    "LineNumber": 17
+    "LineNumber": 17,
+    "Knot": "Start",
+    "Stitch": "Stitch2"
   },
-  "test_7F18": {
+  "test_8JO4": {
     "File": "test.ink",
-    "LineNumber": 4
+    "LineNumber": 4,
+    "Knot": "",
+    "Stitch": ""
   },
-  "test_Intro_VDOT": {
+  "test_Intro_OEL9": {
     "File": "test.ink",
-    "LineNumber": 10
+    "LineNumber": 10,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_8DXY": {
+  "test_Intro_UPJP": {
     "File": "test.ink",
-    "LineNumber": 11
+    "LineNumber": 11,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_UMEL": {
+  "test_Intro_18QU": {
     "File": "test.ink",
-    "LineNumber": 13
+    "LineNumber": 13,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_6H22": {
+  "test_Intro_ZGD6": {
     "File": "test.ink",
-    "LineNumber": 14
+    "LineNumber": 14,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_WMFS": {
+  "test_Intro_SHMV": {
     "File": "test.ink",
-    "LineNumber": 15
+    "LineNumber": 15,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_3F7H": {
+  "test_Intro_FM49": {
     "File": "test.ink",
-    "LineNumber": 16
+    "LineNumber": 16,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_NSPN": {
+  "test_Intro_VYDK": {
     "File": "test.ink",
-    "LineNumber": 17
+    "LineNumber": 17,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_N9TG": {
+  "test_Intro_VK5H": {
     "File": "test.ink",
-    "LineNumber": 19
+    "LineNumber": 19,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_X726": {
+  "test_Intro_7XTJ": {
     "File": "test.ink",
-    "LineNumber": 21
+    "LineNumber": 21,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_50E9": {
+  "test_Intro_PA4L": {
     "File": "test.ink",
-    "LineNumber": 22
+    "LineNumber": 22,
+    "Knot": "Intro",
+    "Stitch": ""
   },
-  "test_Intro_Branch_JBW0": {
+  "test_Intro_Branch_B33J": {
     "File": "test.ink",
-    "LineNumber": 26
+    "LineNumber": 26,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Intro_Branch_EQKF": {
+  "test_Intro_Branch_I145": {
     "File": "test.ink",
-    "LineNumber": 28
+    "LineNumber": 28,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Intro_Branch_KXEF": {
+  "test_Intro_Branch_SBJ5": {
     "File": "test.ink",
-    "LineNumber": 34
+    "LineNumber": 34,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Intro_Branch_1BE6": {
+  "test_Intro_Branch_Z8WN": {
     "File": "test.ink",
-    "LineNumber": 35
+    "LineNumber": 35,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Intro_Branch_POMK": {
+  "test_Intro_Branch_SI6F": {
     "File": "test.ink",
-    "LineNumber": 36
+    "LineNumber": 36,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Intro_Branch_0ZJB": {
+  "test_Intro_Branch_5LTI": {
     "File": "test.ink",
-    "LineNumber": 38
+    "LineNumber": 38,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Intro_Branch_RMBW": {
+  "test_Intro_Branch_C2IO": {
     "File": "test.ink",
-    "LineNumber": 42
+    "LineNumber": 42,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Intro_Branch_CLCX": {
+  "test_Intro_Branch_XJHK": {
     "File": "test.ink",
-    "LineNumber": 45
+    "LineNumber": 45,
+    "Knot": "Intro",
+    "Stitch": "Branch"
   },
-  "test_Ending1_EJDE": {
+  "test_Ending1_65WX": {
     "File": "test.ink",
-    "LineNumber": 50
+    "LineNumber": 50,
+    "Knot": "Ending1",
+    "Stitch": ""
   },
-  "test_Ending2_SLIC": {
+  "test_Ending2_4WS7": {
     "File": "test.ink",
-    "LineNumber": 54
+    "LineNumber": 54,
+    "Knot": "Ending2",
+    "Stitch": ""
   }
 }

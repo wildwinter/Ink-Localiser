@@ -47,11 +47,7 @@ namespace InkLocaliser
 
             try {
                 var options = new JsonSerializerOptions { WriteIndented = true };
-                Dictionary<string, object> entries = new();
-                foreach(var originEntry in _localiser.LineOrigins) {
-                    entries.Add(originEntry.Key, new {File=originEntry.Value.File, LineNumber=originEntry.Value.LineNumber});
-                }
-                string fileContents = JsonSerializer.Serialize(entries, options);
+                string fileContents = JsonSerializer.Serialize(_localiser.LineOrigins, options);
 
                 File.WriteAllText(outputFilePath, fileContents, Encoding.UTF8);
             }
