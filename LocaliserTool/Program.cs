@@ -7,7 +7,9 @@ var jsonOptions = new JSONHandler.Options();
 // ----- Simple Args -----
 foreach (var arg in args)
 {
-    if (arg.Equals("--retag"))
+    if (arg.StartsWith("--file="))
+        options.file = arg.Substring(7);
+    else if (arg.Equals("--retag"))
         options.retag = true;
     else if (arg.ToLower().Equals("--shortids"))
         options.shortIDs = true;
@@ -24,6 +26,9 @@ foreach (var arg in args)
     else {
         Console.WriteLine("Ink Localiser");
         Console.WriteLine("Arguments:");
+        Console.WriteLine("  --file=<inkFile> - File to convert, relative to working dir.");
+        Console.WriteLine("                      e.g. --file=inkFile/.ink");
+        Console.WriteLine("                      If this is specified, no need to supply --folder or --filePattern.");
         Console.WriteLine("  --folder=<folder> - Root folder to scan for Ink files to localise, relative to working dir.");
         Console.WriteLine("                      e.g. --folder=inkFiles/");
         Console.WriteLine("                      Default is the current working dir.");

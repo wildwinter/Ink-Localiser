@@ -17,6 +17,8 @@ namespace InkLocaliser
             public string folder = "";
             // Files to include. Will search subfolders of the working dir.
             public string filePattern = "*.ink";
+            // File to use - instead of folder/filePattern
+            public string file = "";
             // Use ShortIDs?
             public bool shortIDs = false;
         }
@@ -46,6 +48,7 @@ namespace InkLocaliser
         private Dictionary<string, string> _stringValues = new();
         private string _previousCWD="";
         private string _folder = "";
+        private string _file = "";
 
         public List<string> UsedInkFiles {get{return _fileHandler.UsedInkFiles;}}
         public Dictionary<string, Origin> LineOrigins {get {return _origins;}}
@@ -64,7 +67,15 @@ namespace InkLocaliser
             // We'll restore this later.
             _previousCWD = Environment.CurrentDirectory;
 
-            _folder= _options.folder;
+            if (!string.IsNullOrEmpty(_options.file))
+            {
+                _file = System.IO.Path.GetFileName(_options.file);
+                _folder = System.IO.Path.GetDirectoryName(_options.file)??"";
+            }
+            else 
+            {
+                _folder= _options.folder;
+            }
             if (String.IsNullOrWhiteSpace(_folder))
                 _folder = _previousCWD;
             _folder = System.IO.Path.GetFullPath(_folder);
@@ -72,11 +83,24 @@ namespace InkLocaliser
             // Need this for InkParser to work properly with includes and such.
             Directory.SetCurrentDirectory(_folder);
 
-            try {                
-                DirectoryInfo dir = new DirectoryInfo(_folder);
-                foreach (FileInfo file in dir.GetFiles(_options.filePattern, SearchOption.AllDirectories))
+            try {      
+                if (!string.IsNullOrEmpty(_file))
                 {
-                    inkFiles.Add(file.FullName);
+                    string filePath = System.IO.Path.Combine(_folder,_file);
+                    if (!System.IO.Path.Exists(filePath))
+                    {
+                        Console.Error.WriteLine($"Error finding source file to process: {_file}.");
+                        success = false;
+                    }
+                    inkFiles.Add(filePath);
+                }
+                else
+                {          
+                    DirectoryInfo dir = new DirectoryInfo(_folder);
+                    foreach (FileInfo file in dir.GetFiles(_options.filePattern, SearchOption.AllDirectories))
+                    {
+                        inkFiles.Add(file.FullName);
+                    }
                 }
             } catch (Exception ex) {
                 Console.Error.WriteLine($"Error finding files to process: {_folder}: " + ex.Message);

@@ -63,17 +63,26 @@ Look for every Ink file starting with `start` in the `inkFiles` folder, process 
 
 `LocaliserTool.exe --folder=inkFiles/ --filePattern=start*.ink --csv=output/strings.csv`
 
+Start with the `demo.ink` Ink file, process it and any included files for IDs, and output the data in the file `output/strings.csv`:
+
+`LocaliserTool.exe --file=demo.ink --csv=output/strings.csv`
+
 ### Arguments
+
+- `--file=<inkFile>`
+
+    File to localise, including all its imports. If you specify `--folder` you don't need this.
 
 - `--folder=<folder>`
 
     Root folder to scan for Ink files to localise relative to working dir. 
-    e.g. `--folder=inkFiles/` 
+    If you specify `--file` you don't need this.
+    e.g. `--folder=inkFiles/`
     Default is the current working dir.
 
-- `--filePattern=<folder>`
+- `--filePattern=<pattern>`
 
-    Root folder to scan for Ink files to localise.
+    Root folder to scan the `--folder` for Ink files to localise.
     e.g. `--filePattern=start-*.ink`
     Default is `*.ink`
 
