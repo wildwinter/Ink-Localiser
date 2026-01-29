@@ -31,7 +31,7 @@ This tool takes a set of raw ink files, scans them for lines of text, and genera
 
 This means that every line of meaningful text in the Ink file now has a unique ID attached, as a tag. That means you can use that ID for localisation or for triggering the correct audio.
 
-The tool also optionally exports CSV or JSON files containing the IDs and their associated text content from all the processed Ink files - which can then be used as a basis for localisation.
+The tool also optionally exports CSV, JSON, or PO/POT files containing the IDs and their associated text content from all the processed Ink files - which can then be used as a basis for localisation.
 
 Each time the tool is run, it preserves the old IDs, just adding them to any newly appeared lines.
 
@@ -51,6 +51,10 @@ And an optional JSON file breaking down where each line comes from, like so:
 ![Generated Origin JSON File](docs/demo-origins.png)
 (This last one is handy for toolchains or debugging.)
 
+### PO Support
+
+It can also produce industry-standard PO/POT files for use with translation tools like Poedit, Weblate, or Crowdin. A POT template file is generated fresh each run, while per-language PO files are merged to preserve existing translations.
+
 ## Command-Line Tool
 
 This is a command-line utility with a few arguments. A few simple examples:
@@ -66,6 +70,14 @@ Look for every Ink file starting with `start` in the `inkFiles` folder, process 
 Start with the `demo.ink` Ink file, process it and any included files for IDs, and output the data in the file `output/strings.csv`:
 
 `LocaliserTool.exe --file=demo.ink --csv=output/strings.csv`
+
+Generate a POT template and PO files for French and German:
+
+`LocaliserTool.exe --folder=inkFiles/ --pot=locale/messages.pot --po-dir=locale/ --po-langs=fr,de`
+
+Generate just a POT template (for use with external translation tools):
+
+`LocaliserTool.exe --folder=inkFiles/ --pot=locale/messages.pot`
 
 ### Arguments
 
@@ -110,6 +122,34 @@ Start with the `demo.ink` Ink file, process it and any included files for IDs, a
 
     Use short-form IDs which are just the hashcode instead of including the file/knot/stitch,
     if you don't care where they come from.
+
+- `--pot=<potFile>`
+
+    Path to a POT template file to export, relative to working dir.
+    e.g. `--pot=locale/messages.pot`
+    Default is empty, so no POT file will be exported.
+    The POT file is always regenerated from scratch.
+
+- `--po-dir=<folder>`
+
+    Folder for per-language PO files, relative to working dir.
+    e.g. `--po-dir=locale/`
+    Requires `--po-langs` to also be specified.
+    If a PO file already exists, it will be merged rather than overwritten,
+    preserving any existing translations. Strings that no longer exist in the
+    source will be marked as obsolete.
+
+- `--po-langs=<codes>`
+
+    Comma-separated target language codes for PO file generation.
+    e.g. `--po-langs=fr,de,es,ja`
+    Requires `--po-dir` to also be specified.
+
+- `--po-source-lang=<code>`
+
+    Source language code, used in PO/POT file headers.
+    e.g. `--po-source-lang=en`
+    Default is `en`.
 
 - `--help`
 
