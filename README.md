@@ -87,7 +87,7 @@ Generate just a POT template (for use with external translation tools):
 
 - `--folder=<folder>`
 
-    Root folder to scan for Ink files to localise relative to working dir. 
+    Root folder to scan for Ink files to localise relative to working dir.
     If you specify `--file` you don't need this.
     e.g. `--folder=inkFiles/`
     Default is the current working dir.
