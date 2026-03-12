@@ -259,7 +259,7 @@ If you turn on `--shortIDs` the IDs will just be the four-character code, instea
 
 ## Releases
 
-You can find releases for various platforms [here](https://github.com/wildwinter/Ink-Localiser/releases
+You can find releases for various platforms [in the release folder](https://github.com/wildwinter/Ink-Localiser/releases
 ).
 
 There's also a Lib version if you want to be able to access it via the DLL as part of your toolchain. The DLL depends on Inkle's `ink_compiler.dll` and `ink-engine-runtime.dll`.

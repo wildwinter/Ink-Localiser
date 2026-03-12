@@ -2,7 +2,7 @@
 
 rm -rf ./publish/*
 
-version="0.0.3.0"
+version="0.0.3.1"
 targets=("osx-arm64" "osx-x64" "win-x86" "win-x64")
 
 for target in "${targets[@]}"; do
@@ -15,6 +15,10 @@ for target in "${targets[@]}"; do
     cp ./LICENSE ./publish/${target}
     cp ./README.md ./publish/${target}
     cp -r ./docs ./publish/${target}
+
+    if [[ "${target}" == osx-* ]]; then
+        codesign --sign "${APPLE_CODESIGN_ID}" --timestamp --options runtime --force ./publish/${target}/LocaliserTool
+    fi
 
     cd ./publish/${target}
     zip -r "../LocaliserTool-${target}-${version}".zip .
