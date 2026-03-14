@@ -15,6 +15,7 @@
 - [The ID format](#the-id-format)
 - [Releases](#releases)
 - [Caveats](#caveats)
+- [Security Issues](#security-issues)
 - [Under the Hood](#under-the-hood)
 - [Acknowledgements](#acknowledgements)
 - [License and Attribution](#license-and-attribution)
@@ -78,6 +79,8 @@ Generate a POT template and PO files for French and German:
 Generate just a POT template (for use with external translation tools):
 
 `LocaliserTool.exe --folder=inkFiles/ --pot=locale/messages.pot`
+
+*Is the utility failing to run on Windows? Check the [security issues](#security-issues) note here.*
 
 ### Arguments
 
@@ -271,6 +274,26 @@ This isn't very complicated or sophisticated, so your mileage may vary!
 **WARNING**: This rewrites your `.ink` files! And it might break, you never know! It's always good practice to use version control in case a process eats your content, and this is another reason why!
 
 **Inky might not notice**: If for some reason you run this tool while Inky is open, Inky will probably not reload the rebuilt `.ink` file. Use Ctrl-R or CMD-R to reload the file Inky is working on.
+
+## Security Issues
+
+### Note on Windows Security
+
+Because this is a hobbyist project, this app is **currently not digitally signed*** for Windows. If you receive an "Access Denied" or "Unauthorized" error when running this tool in PowerShell/CMD:
+
+1. Right-click the EXE in File Explorer.
+
+2. Select Properties.
+
+3. At the bottom, check the Unblock box and click OK.
+
+Try running the command again.
+
+\* *Because it costs a lot and seems to be impossible outside North America right now for individual developers. Thanks Microsoft!*
+
+### Note on Mac Security
+
+The app is signed. Because it's easier on Mac.
 
 ## Under the Hood
 
