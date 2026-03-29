@@ -32,13 +32,12 @@ namespace InkLocaliser
                 }
                 string fileContents = JsonSerializer.Serialize(entries, options);
 
-                File.WriteAllText(outputFilePath, fileContents, Encoding.UTF8);
+                return VCFileWriter.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
             }
             catch (Exception ex) {
                  Console.Error.WriteLine($"Error writing out JSON file {outputFilePath}: " + ex.Message);
                 return false;
             }
-            return true;
         }
 
         public bool WriteOrigins() {
@@ -49,13 +48,12 @@ namespace InkLocaliser
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 string fileContents = JsonSerializer.Serialize(_localiser.LineOrigins, options);
 
-                File.WriteAllText(outputFilePath, fileContents, Encoding.UTF8);
+                return VCFileWriter.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
             }
             catch (Exception ex) {
                  Console.Error.WriteLine($"Error writing out origins JSON file {outputFilePath}: " + ex.Message);
                 return false;
             }
-            return true;
         }
 
     }

@@ -32,8 +32,7 @@ namespace InkLocaliser
 
             try {
                 string? dir = Path.GetDirectoryName(outputFilePath);
-                if (dir != null && !Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
+                if (dir != null) VCFileWriter.EnsureDirectory(dir);
 
                 StringBuilder output = new();
                 WritePOHeader(output, _options.sourceLanguage, isTemplate: true);
@@ -44,13 +43,12 @@ namespace InkLocaliser
                     WritePOEntry(output, locID, sourceText, "", origin);
                 }
 
-                File.WriteAllText(outputFilePath, output.ToString(), Encoding.UTF8);
+                return VCFileWriter.WriteTextFile(outputFilePath, output.ToString(), Encoding.UTF8);
             }
             catch (Exception ex) {
                 Console.Error.WriteLine($"Error writing POT file {outputFilePath}: " + ex.Message);
                 return false;
             }
-            return true;
         }
 
         public bool WritePOFiles() {
@@ -59,8 +57,7 @@ namespace InkLocaliser
 
                 try {
                     string? dir = Path.GetDirectoryName(filePath);
-                    if (dir != null && !Directory.Exists(dir))
-                        Directory.CreateDirectory(dir);
+                    if (dir != null) VCFileWriter.EnsureDirectory(dir);
 
                     // Parse existing PO file if it exists, to preserve translations.
                     Dictionary<string, POEntry> existingEntries = new();
@@ -95,7 +92,8 @@ namespace InkLocaliser
                         }
                     }
 
-                    File.WriteAllText(filePath, output.ToString(), Encoding.UTF8);
+                    if (!VCFileWriter.WriteTextFile(filePath, output.ToString(), Encoding.UTF8))
+                        return false;
                 }
                 catch (Exception ex) {
                     Console.Error.WriteLine($"Error writing PO file {filePath}: " + ex.Message);

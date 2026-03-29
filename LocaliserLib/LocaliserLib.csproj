@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -15,5 +15,70 @@
       <HintPath>../Lib/Inklecate/ink-engine-runtime.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <!--
+    ── SimpleVCLib integration ────────────────────────────────────────────
+    On every build, search for the latest SimpleVCLib.dll from the
+    neighbouring simple-vc-lib project and copy it to ../Lib/simple-vc-lib/.
+
+    Search order (highest priority first):
+      1. Release build output  (csharp/SimpleVCLib/bin/Release/net8.0/)
+      2. Debug build output    (csharp/SimpleVCLib/bin/Debug/net8.0/)
+      3. csharp/dist snapshot
+
+    If the DLL is found:
+      • It is copied to ../Lib/simple-vc-lib/SimpleVCLib.dll
+      • A project reference and HAVE_SIMPLEVCLIB constant are added so
+        VCFileWriter.cs compiles the VC-aware code path.
+
+    If the DLL is NOT found:
+      • A build warning is emitted.
+      • VCFileWriter.cs falls back to plain File I/O — the build still
+        succeeds; file writes just won't be version-control-aware.
+        Build simple-vc-lib first (dotnet build in ../simple-vc-lib/csharp)
+        to enable full VC support.
+  -->
+
+  <Target Name="CopySimpleVCLib" BeforeTargets="BeforeBuild">
+    <PropertyGroup>
+      <_SVCLRelease>$(MSBuildThisFileDirectory)../../simple-vc-lib/csharp/SimpleVCLib/bin/Release/net8.0/SimpleVCLib.dll</_SVCLRelease>
+      <_SVCLDebug>$(MSBuildThisFileDirectory)../../simple-vc-lib/csharp/SimpleVCLib/bin/Debug/net8.0/SimpleVCLib.dll</_SVCLDebug>
+      <_SVCLDist>$(MSBuildThisFileDirectory)../../simple-vc-lib/csharp/dist/SimpleVCLib.dll</_SVCLDist>
+      <_SVCLDest>$(MSBuildThisFileDirectory)../Lib/simple-vc-lib/SimpleVCLib.dll</_SVCLDest>
+      <_SVCLSource></_SVCLSource>
+    </PropertyGroup>
+
+    <!-- Pick the highest-priority source that exists -->
+    <PropertyGroup Condition="Exists('$(_SVCLRelease)')">
+      <_SVCLSource>$(_SVCLRelease)</_SVCLSource>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(_SVCLSource)' == '' And Exists('$(_SVCLDebug)')">
+      <_SVCLSource>$(_SVCLDebug)</_SVCLSource>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(_SVCLSource)' == '' And Exists('$(_SVCLDist)')">
+      <_SVCLSource>$(_SVCLDist)</_SVCLSource>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(MSBuildThisFileDirectory)../Lib/simple-vc-lib"
+             Condition="'$(_SVCLSource)' != ''" />
+    <Copy SourceFiles="$(_SVCLSource)" DestinationFiles="$(_SVCLDest)"
+          Condition="'$(_SVCLSource)' != ''" />
+    <Message Text="SimpleVCLib: copied from $(_SVCLSource)"
+             Importance="normal" Condition="'$(_SVCLSource)' != ''" />
+    <Warning Text="SimpleVCLib not found — file writes will not be VC-aware. Run 'dotnet build' inside ../simple-vc-lib/csharp to enable this."
+             Condition="'$(_SVCLSource)' == ''" />
+  </Target>
+
+  <!-- Dynamically add the reference and define constant after the copy -->
+  <Target Name="AddSimpleVCLibReference" AfterTargets="CopySimpleVCLib" BeforeTargets="CoreCompile">
+    <ItemGroup Condition="Exists('$(_SVCLDest)')">
+      <Reference Include="SimpleVCLib">
+        <HintPath>$(_SVCLDest)</HintPath>
+      </Reference>
+    </ItemGroup>
+    <PropertyGroup Condition="Exists('$(_SVCLDest)')">
+      <DefineConstants>$(DefineConstants);HAVE_SIMPLEVCLIB</DefineConstants>
+    </PropertyGroup>
+  </Target>
 
 </Project>

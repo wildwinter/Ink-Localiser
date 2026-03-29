@@ -345,8 +345,7 @@ namespace InkLocaliser
                 string outputFilePath = filePath;
                 if (DEBUG_RETAG_FILES)   // Debug purposes, copy to a different file instead.
                     outputFilePath += ".txt";
-                File.WriteAllText(outputFilePath, output, Encoding.UTF8);
-                return true;
+                return VCFileWriter.WriteTextFile(outputFilePath, output, Encoding.UTF8);
             }
             catch (Exception ex)
             {

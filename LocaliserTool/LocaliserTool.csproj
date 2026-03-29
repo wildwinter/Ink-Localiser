@@ -1,4 +1,4 @@
-﻿<!-- dotnet publish -c Release -r osx-arm64 -o ./publish -->
+<!-- dotnet publish -c Release -r osx-arm64 -o ./publish -->
 
 <Project Sdk="Microsoft.NET.Sdk">
 
@@ -16,5 +16,27 @@
   <ItemGroup>
     <ProjectReference Include="../LocaliserLib/LocaliserLib.csproj" />
   </ItemGroup>
+
+  <!--
+    ── SimpleVCLib bundling ───────────────────────────────────────────────
+    LocaliserLib already copies SimpleVCLib.dll to ../Lib/simple-vc-lib/
+    during its own build.  We repeat the reference here so that dotnet
+    publish (PublishSingleFile) can see it directly and bundle it into the
+    executable — the same way ink_compiler.dll and ink-engine-runtime.dll
+    are bundled.
+
+    If the DLL is absent (simple-vc-lib not yet built) the tool still
+    compiles and runs; file writes just won't be VC-aware.
+  -->
+  <Target Name="AddSimpleVCLibToTool" BeforeTargets="CoreCompile">
+    <PropertyGroup>
+      <_SVCLDest>$(MSBuildThisFileDirectory)../Lib/simple-vc-lib/SimpleVCLib.dll</_SVCLDest>
+    </PropertyGroup>
+    <ItemGroup Condition="Exists('$(_SVCLDest)')">
+      <Reference Include="SimpleVCLib">
+        <HintPath>$(_SVCLDest)</HintPath>
+      </Reference>
+    </ItemGroup>
+  </Target>
 
 </Project>
