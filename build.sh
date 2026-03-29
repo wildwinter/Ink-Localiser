@@ -28,7 +28,6 @@ done
 
 mkdir ./publish/dll
 cp ./LocaliserLib/bin/Release/net8.0/LocaliserLib.dll ./publish/dll
-cp ./LocaliserLib/bin/Release/net8.0/SimpleVCLib.dll ./publish/dll
 cp ./LICENSE ./publish/dll
 
 cd ./publish/dll
