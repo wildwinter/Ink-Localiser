@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using SimpleVCLib;
 
 namespace InkLocaliser
 {
@@ -32,7 +33,9 @@ namespace InkLocaliser
                 }
                 string fileContents = JsonSerializer.Serialize(entries, options);
 
-                return VCFileWriter.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                if (!result.Success) Console.Error.WriteLine($"Error writing out JSON file {outputFilePath}: {result.Message}");
+                return result.Success;
             }
             catch (Exception ex) {
                  Console.Error.WriteLine($"Error writing out JSON file {outputFilePath}: " + ex.Message);
@@ -48,7 +51,9 @@ namespace InkLocaliser
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 string fileContents = JsonSerializer.Serialize(_localiser.LineOrigins, options);
 
-                return VCFileWriter.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                if (!result.Success) Console.Error.WriteLine($"Error writing out origins JSON file {outputFilePath}: {result.Message}");
+                return result.Success;
             }
             catch (Exception ex) {
                  Console.Error.WriteLine($"Error writing out origins JSON file {outputFilePath}: " + ex.Message);

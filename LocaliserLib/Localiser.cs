@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.RegularExpressions;
+using SimpleVCLib;
 using Ink;
 using Ink.Parsed;
 
@@ -345,7 +346,9 @@ namespace InkLocaliser
                 string outputFilePath = filePath;
                 if (DEBUG_RETAG_FILES)   // Debug purposes, copy to a different file instead.
                     outputFilePath += ".txt";
-                return VCFileWriter.WriteTextFile(outputFilePath, output, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, output, Encoding.UTF8);
+                if (!result.Success) Console.Error.WriteLine($"Error replacing tags in {fileName}: {result.Message}");
+                return result.Success;
             }
             catch (Exception ex)
             {

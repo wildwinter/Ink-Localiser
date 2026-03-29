@@ -1,4 +1,5 @@
 using System.Text;
+using SimpleVCLib;
 
 namespace InkLocaliser
 {
@@ -32,7 +33,9 @@ namespace InkLocaliser
                 }
 
                 string fileContents = output.ToString();
-                return VCFileWriter.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                if (!result.Success) Console.Error.WriteLine($"Error writing out CSV file {outputFilePath}: {result.Message}");
+                return result.Success;
             }
             catch (Exception ex) {
                  Console.Error.WriteLine($"Error writing out CSV file {outputFilePath}: " + ex.Message);

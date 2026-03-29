@@ -1,4 +1,5 @@
 using System.Text;
+using SimpleVCLib;
 
 namespace InkLocaliser
 {
@@ -32,7 +33,7 @@ namespace InkLocaliser
 
             try {
                 string? dir = Path.GetDirectoryName(outputFilePath);
-                if (dir != null) VCFileWriter.EnsureDirectory(dir);
+                if (dir != null) Directory.CreateDirectory(dir);
 
                 StringBuilder output = new();
                 WritePOHeader(output, _options.sourceLanguage, isTemplate: true);
@@ -43,7 +44,9 @@ namespace InkLocaliser
                     WritePOEntry(output, locID, sourceText, "", origin);
                 }
 
-                return VCFileWriter.WriteTextFile(outputFilePath, output.ToString(), Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, output.ToString(), Encoding.UTF8);
+                if (!result.Success) Console.Error.WriteLine($"Error writing POT file {outputFilePath}: {result.Message}");
+                return result.Success;
             }
             catch (Exception ex) {
                 Console.Error.WriteLine($"Error writing POT file {outputFilePath}: " + ex.Message);
@@ -57,7 +60,7 @@ namespace InkLocaliser
 
                 try {
                     string? dir = Path.GetDirectoryName(filePath);
-                    if (dir != null) VCFileWriter.EnsureDirectory(dir);
+                    if (dir != null) Directory.CreateDirectory(dir);
 
                     // Parse existing PO file if it exists, to preserve translations.
                     Dictionary<string, POEntry> existingEntries = new();
@@ -92,8 +95,11 @@ namespace InkLocaliser
                         }
                     }
 
-                    if (!VCFileWriter.WriteTextFile(filePath, output.ToString(), Encoding.UTF8))
+                    var result = VCLib.WriteTextFile(filePath, output.ToString(), Encoding.UTF8);
+                    if (!result.Success) {
+                        Console.Error.WriteLine($"Error writing PO file {filePath}: {result.Message}");
                         return false;
+                    }
                 }
                 catch (Exception ex) {
                     Console.Error.WriteLine($"Error writing PO file {filePath}: " + ex.Message);

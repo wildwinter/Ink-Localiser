@@ -2,7 +2,7 @@
 
 rm -rf ./publish/*
 
-version="0.0.4.0"
+version="0.0.4.1"
 targets=("osx-arm64" "osx-x64" "win-x86" "win-x64")
 
 for target in "${targets[@]}"; do
@@ -28,10 +28,7 @@ done
 
 mkdir ./publish/dll
 cp ./LocaliserLib/bin/Release/net8.0/LocaliserLib.dll ./publish/dll
-# SimpleVCLib is a dependency of LocaliserLib — include it for library users.
-if [ -f "./Lib/simple-vc-lib/SimpleVCLib.dll" ]; then
-    cp ./Lib/simple-vc-lib/SimpleVCLib.dll ./publish/dll
-fi
+cp ./LocaliserLib/bin/Release/net8.0/SimpleVCLib.dll ./publish/dll
 cp ./LICENSE ./publish/dll
 
 cd ./publish/dll
