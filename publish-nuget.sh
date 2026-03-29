@@ -12,7 +12,7 @@
 
 set -e
 
-VERSION=${1:-}
+VERSION="0.0.4.1"
 if [ -z "$VERSION" ]; then
     echo "Error: version argument required."
     echo "Usage: publish-nuget.sh <version>"

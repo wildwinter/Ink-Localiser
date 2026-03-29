@@ -262,10 +262,21 @@ If you turn on `--shortIDs` the IDs will just be the four-character code, instea
 
 ## Releases
 
-You can find releases for various platforms [in the release folder](https://github.com/wildwinter/Ink-Localiser/releases
-).
+You can find releases for various platforms [in the release folder](https://github.com/wildwinter/Ink-Localiser/releases).
 
-There's also a Lib version if you want to be able to access it via the DLL as part of your toolchain. The DLL depends on Inkle's `ink_compiler.dll` and `ink-engine-runtime.dll`.
+### NuGet Package
+
+If you want to use LocaliserLib as part of your own .NET toolchain, it is available on NuGet:
+
+```
+dotnet add package wildwinter.LocaliserLib
+```
+
+> **Note:** The package does not bundle the Ink DLLs. You must separately reference `ink_compiler.dll` and `ink-engine-runtime.dll` from an [inklecate release](https://github.com/inkle/ink/releases) in your project.
+
+### DLL Distribution
+
+A pre-built `LocaliserLib.dll` is also included in each [GitHub release](https://github.com/wildwinter/Ink-Localiser/releases) for use without NuGet. This also requires `ink_compiler.dll` and `ink-engine-runtime.dll` from inklecate.
 
 ## Caveats
 
