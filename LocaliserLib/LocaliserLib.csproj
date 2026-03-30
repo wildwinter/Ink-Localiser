@@ -41,7 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="wildwinter.SimpleVCLib" Version="0.0.4" />
+    <PackageReference Include="wildwinter.SimpleVCLib" Version="0.0.5" />
   </ItemGroup>
 
   <ItemGroup>
