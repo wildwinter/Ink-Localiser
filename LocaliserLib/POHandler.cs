@@ -44,7 +44,11 @@ namespace InkLocaliser
                     WritePOEntry(output, locID, sourceText, "", origin);
                 }
 
-                var result = VCLib.WriteTextFile(outputFilePath, output.ToString(), Encoding.UTF8);
+                string newContent = output.ToString();
+                if (POContentUnchanged(outputFilePath, newContent))
+                    return true;
+
+                var result = VCLib.WriteTextFile(outputFilePath, newContent, Encoding.UTF8, true);
                 if (!result.Success) Console.Error.WriteLine($"Error writing POT file {outputFilePath}: {result.Message}");
                 return result.Success;
             }
@@ -95,10 +99,13 @@ namespace InkLocaliser
                         }
                     }
 
-                    var result = VCLib.WriteTextFile(filePath, output.ToString(), Encoding.UTF8);
-                    if (!result.Success) {
-                        Console.Error.WriteLine($"Error writing PO file {filePath}: {result.Message}");
-                        return false;
+                    string newContent = output.ToString();
+                    if (!POContentUnchanged(filePath, newContent)) {
+                        var result = VCLib.WriteTextFile(filePath, newContent, Encoding.UTF8, true);
+                        if (!result.Success) {
+                            Console.Error.WriteLine($"Error writing PO file {filePath}: {result.Message}");
+                            return false;
+                        }
                     }
                 }
                 catch (Exception ex) {
@@ -112,6 +119,31 @@ namespace InkLocaliser
         }
 
         // ----- Private Helpers -----
+
+        /// <summary>
+        /// Returns true if the on-disk PO/POT file at <paramref name="filePath"/> has the
+        /// same content as <paramref name="newContent"/>, ignoring date header lines
+        /// ("POT-Creation-Date" and "PO-Revision-Date") which change on every export.
+        /// </summary>
+        private static bool POContentUnchanged(string filePath, string newContent)
+        {
+            if (!File.Exists(filePath))
+                return false;
+            try
+            {
+                var existing = File.ReadAllText(filePath, new System.Text.UTF8Encoding(false));
+                return StripPODates(existing) == StripPODates(newContent);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        private static readonly System.Text.RegularExpressions.Regex _poDateLine =
+            new(@"""(POT-Creation-Date|PO-Revision-Date): [^\n]+\\n""", System.Text.RegularExpressions.RegexOptions.Compiled);
+
+        private static string StripPODates(string content) => _poDateLine.Replace(content, "");
 
         private void WritePOHeader(StringBuilder sb, string language, bool isTemplate) {
             string now = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mmzzz");

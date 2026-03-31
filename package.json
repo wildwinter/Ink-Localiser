@@ -1,0 +1,9 @@
+{
+  "version": "0.0.4.4",
+  "scripts": {
+    "build": "dotnet build",
+    "test": "npm run build && cd LocaliserLib.Tests && dotnet test",
+    "publish": "npm run build && ./publish.sh $npm_package_version",
+    "publish-nuget": "npm run build && ./publish-nuget.sh $npm_package_version"
+  }
+}

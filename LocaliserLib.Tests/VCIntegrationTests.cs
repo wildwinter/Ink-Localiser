@@ -104,13 +104,46 @@ internal static class TestHelpers
     public static Localiser PrepareLocaliser(string dir)
     {
         var inkDest = Path.Combine(dir, "simple.ink");
-        File.Copy("TestData/simple.ink", inkDest, overwrite: true);
+        File.Copy(Path.Combine(AppContext.BaseDirectory, "TestData", "simple.ink"), inkDest, overwrite: true);
 
         var localiser = new Localiser(new Localiser.Options { file = inkDest });
         bool ok = localiser.Run();
         Assert.True(ok, "Localiser.Run() should succeed on the test ink file");
         Assert.True(localiser.GetStringKeys().Count > 0, "Test ink file should contain at least one localisable string");
         return localiser;
+    }
+
+    /// <summary>Stages all changes and creates a commit in the git repo.</summary>
+    public static void CommitGitRepo(string dir)
+    {
+        static void Run(string args, string cwd)
+        {
+            var psi = new ProcessStartInfo("git", args)
+            {
+                WorkingDirectory = cwd,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+            };
+            using var p = Process.Start(psi)!;
+            p.WaitForExit();
+        }
+        Run("add -A", dir);
+        Run("commit -m snapshot", dir);
+    }
+
+    /// <summary>Commits all pending changes in the SVN working copy.</summary>
+    public static void CommitSvnRepo(string wcDir)
+    {
+        var psi = new ProcessStartInfo("svn", "commit -m snapshot --username test --no-auth-cache")
+        {
+            WorkingDirectory = wcDir,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+        };
+        using var p = Process.Start(psi)!;
+        p.WaitForExit();
     }
 
     /// <summary>Returns the short git status prefix for a path (e.g. "A", "M", "??").</summary>
@@ -259,6 +292,24 @@ public class GitVCIntegrationTests : IDisposable
     }
 
     [Fact]
+    public void JSONHandler_WriteStrings_UnchangedContent_NotUpdatedInGit()
+    {
+        var outputPath = Path.Combine(_repoDir, "strings.json");
+        var handler = new JSONHandler(_localiser, new JSONHandler.Options { outputFilePath = outputPath });
+
+        // First write, then commit so the repo is clean.
+        handler.WriteStrings();
+        TestHelpers.CommitGitRepo(_repoDir);
+
+        // Write the same content again.
+        bool ok = handler.WriteStrings();
+
+        Assert.True(ok);
+        // Content is unchanged, so the file should not appear as modified in git.
+        Assert.Equal(string.Empty, TestHelpers.GitStatus(outputPath, _repoDir));
+    }
+
+    [Fact]
     public void AutoDetect_GitRepo_WritesAndStages()
     {
         // ClearProvider so VCLib auto-detects from the file path.
@@ -361,6 +412,26 @@ public class SvnVCIntegrationTests : IDisposable
         Assert.True(ok);
         Assert.True(File.Exists(outputPath));
         Assert.StartsWith("A", TestHelpers.SvnStatus(outputPath, _wcDir));
+    }
+
+    [Fact]
+    public void JSONHandler_WriteStrings_UnchangedContent_NotUpdatedInSvn()
+    {
+        if (!_available) return;
+
+        var outputPath = Path.Combine(_wcDir, "strings.json");
+        var handler = new JSONHandler(_localiser!, new JSONHandler.Options { outputFilePath = outputPath });
+
+        // First write, then commit so the working copy is clean.
+        handler.WriteStrings();
+        TestHelpers.CommitSvnRepo(_wcDir);
+
+        // Write the same content again.
+        bool ok = handler.WriteStrings();
+
+        Assert.True(ok);
+        // Content is unchanged, so the file should not appear as modified in SVN.
+        Assert.Equal(string.Empty, TestHelpers.SvnStatus(outputPath, _wcDir));
     }
 
     [Fact]

@@ -33,7 +33,7 @@ namespace InkLocaliser
                 }
                 string fileContents = JsonSerializer.Serialize(entries, options);
 
-                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8, false);
                 if (!result.Success) Console.Error.WriteLine($"Error writing out JSON file {outputFilePath}: {result.Message}");
                 return result.Success;
             }
@@ -51,7 +51,7 @@ namespace InkLocaliser
                 var options = new JsonSerializerOptions { WriteIndented = true };
                 string fileContents = JsonSerializer.Serialize(_localiser.LineOrigins, options);
 
-                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8, false);
                 if (!result.Success) Console.Error.WriteLine($"Error writing out origins JSON file {outputFilePath}: {result.Message}");
                 return result.Success;
             }

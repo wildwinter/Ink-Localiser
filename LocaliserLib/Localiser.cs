@@ -346,7 +346,7 @@ namespace InkLocaliser
                 string outputFilePath = filePath;
                 if (DEBUG_RETAG_FILES)   // Debug purposes, copy to a different file instead.
                     outputFilePath += ".txt";
-                var result = VCLib.WriteTextFile(outputFilePath, output, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, output, Encoding.UTF8, false);
                 if (!result.Success) Console.Error.WriteLine($"Error replacing tags in {fileName}: {result.Message}");
                 return result.Success;
             }

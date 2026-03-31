@@ -33,7 +33,7 @@ namespace InkLocaliser
                 }
 
                 string fileContents = output.ToString();
-                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8);
+                var result = VCLib.WriteTextFile(outputFilePath, fileContents, Encoding.UTF8, false);
                 if (!result.Success) Console.Error.WriteLine($"Error writing out CSV file {outputFilePath}: {result.Message}");
                 return result.Success;
             }
