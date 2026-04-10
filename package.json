@@ -1,9 +1,10 @@
 {
-  "version": "0.0.4.4",
+  "version": "0.0.4.5",
   "scripts": {
     "build": "dotnet build",
     "test": "npm run build && cd LocaliserLib.Tests && dotnet test",
     "publish": "npm run build && ./publish.sh $npm_package_version",
-    "publish-nuget": "npm run build && ./publish-nuget.sh $npm_package_version"
+    "publish-nuget": "npm run build && ./publish-nuget.sh $npm_package_version",
+    "upgrade-simplevclib": "dotnet package search wildwinter.SimpleVCLib --exact-match --format json | node -e \"const d=JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')); const pkgs=d.searchResult[0].packages; const v=pkgs[pkgs.length-1].version; ['LocaliserLib/LocaliserLib.csproj','LocaliserLib.Tests/LocaliserLib.Tests.csproj'].forEach(f=>{const s=require('fs').readFileSync(f,'utf8'); require('fs').writeFileSync(f,s.replace(/wildwinter\\.SimpleVCLib\\\" Version=\\\"[^\\\"]+\\\"/,'wildwinter.SimpleVCLib\\\" Version=\\\"'+v+'\\\"'));console.log(f+' -> '+v);})\""
   }
 }
