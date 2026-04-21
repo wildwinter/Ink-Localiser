@@ -187,6 +187,7 @@ internal static class TestHelpers
 /// SimpleVCLib correctly: output files are written AND staged in git.
 /// Also verifies that the Localiser's ink-file tag insertion is staged.
 /// </summary>
+[Collection("VCIntegration")]
 public class GitVCIntegrationTests : IDisposable
 {
     private readonly string _repoDir = TestHelpers.MakeTempDir();
@@ -332,6 +333,7 @@ public class GitVCIntegrationTests : IDisposable
 // Skipped automatically when svn/svnadmin are not installed.
 // ---------------------------------------------------------------------------
 
+[Collection("VCIntegration")]
 public class SvnVCIntegrationTests : IDisposable
 {
     private readonly bool _available;

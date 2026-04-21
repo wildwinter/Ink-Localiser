@@ -84,68 +84,73 @@ namespace InkLocaliser
             // Need this for InkParser to work properly with includes and such.
             Directory.SetCurrentDirectory(_folder);
 
-            try {      
-                if (!string.IsNullOrEmpty(_file))
-                {
-                    string filePath = System.IO.Path.Combine(_folder,_file);
-                    if (!System.IO.Path.Exists(filePath))
+            try
+            {
+                try {
+                    if (!string.IsNullOrEmpty(_file))
                     {
-                        Console.Error.WriteLine($"Error finding source file to process: {_file}.");
-                        success = false;
+                        string filePath = System.IO.Path.Combine(_folder,_file);
+                        if (!System.IO.Path.Exists(filePath))
+                        {
+                            Console.Error.WriteLine($"Error finding source file to process: {_file}.");
+                            success = false;
+                        }
+                        inkFiles.Add(filePath);
                     }
-                    inkFiles.Add(filePath);
-                }
-                else
-                {          
-                    DirectoryInfo dir = new DirectoryInfo(_folder);
-                    foreach (FileInfo file in dir.GetFiles(_options.filePattern, SearchOption.AllDirectories))
+                    else
                     {
-                        inkFiles.Add(file.FullName);
+                        DirectoryInfo dir = new DirectoryInfo(_folder);
+                        foreach (FileInfo file in dir.GetFiles(_options.filePattern, SearchOption.AllDirectories))
+                        {
+                            inkFiles.Add(file.FullName);
+                        }
                     }
-                }
-            } catch (Exception ex) {
-                Console.Error.WriteLine($"Error finding files to process: {_folder}: " + ex.Message);
-                success=false;
-            }
-
-            _origins.Clear();
-
-            // ----- For each file... -----
-            if (success) {
-                foreach(var inkFile in inkFiles) {
-                    
-                    var content = _fileHandler.LoadInkFileContents(inkFile);
-                    if (content==null) {
-                        success = false;
-                        break;
-                    }
-
-                    InkParser parser = new InkParser(content, inkFile, OnError, _fileHandler);
-
-                    var story = parser.Parse();
-                    if (_inkParseErrors) {
-                        Console.Error.WriteLine($"Error parsing ink file.");
-                        success = false;
-                        break;
-                    }
-
-                    // Go through the parsed story extracting existing localised lines, and lines still to be localised...
-                    if (!ProcessStory(story)) {
-                        success=false;
-                        break;
-                    }
-                }
-            }
-
-            // If new tags need to be added, add them now.
-            if (success) {
-                if (!InsertTagsToFiles()) {
+                } catch (Exception ex) {
+                    Console.Error.WriteLine($"Error finding files to process: {_folder}: " + ex.Message);
                     success=false;
                 }
-            }
 
-            // Restore current directory.
-            Directory.SetCurrentDirectory(_previousCWD);
+                _origins.Clear();
+
+                // ----- For each file... -----
+                if (success) {
+                    foreach(var inkFile in inkFiles) {
+
+                        var content = _fileHandler.LoadInkFileContents(inkFile);
+                        if (content==null) {
+                            success = false;
+                            break;
+                        }
+
+                        InkParser parser = new InkParser(content, inkFile, OnError, _fileHandler);
+
+                        var story = parser.Parse();
+                        if (_inkParseErrors) {
+                            Console.Error.WriteLine($"Error parsing ink file.");
+                            success = false;
+                            break;
+                        }
+
+                        // Go through the parsed story extracting existing localised lines, and lines still to be localised...
+                        if (!ProcessStory(story)) {
+                            success=false;
+                            break;
+                        }
+                    }
+                }
+
+                // If new tags need to be added, add them now.
+                if (success) {
+                    if (!InsertTagsToFiles()) {
+                        success=false;
+                    }
+                }
+            }
+            finally
+            {
+                // Restore current directory — always, even if an exception escapes.
+                Directory.SetCurrentDirectory(_previousCWD);
+            }
 
             return success;
         }

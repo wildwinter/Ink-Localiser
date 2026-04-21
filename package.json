@@ -1,5 +1,5 @@
 {
-  "version": "0.0.4.6",
+  "version": "0.0.4.8",
   "scripts": {
     "build": "dotnet build",
     "test": "npm run build && cd LocaliserLib.Tests && dotnet test",
