@@ -12,7 +12,8 @@ for target in "${targets[@]}"; do
     cd ..
 
     rm ./publish/${target}/*.pdb
-    cp ./LICENSE ./publish/${target}
+    # Combine project license with Ink's license (Ink DLLs are embedded in the self-contained executable)
+    { cat ./LICENSE; printf '\n---\n\nThis distribution includes components from Ink (https://github.com/inkle/ink):\n\n'; cat ./Lib/Inklecate/LICENSE; } > ./publish/${target}/LICENSE
     cp ./README.md ./publish/${target}
     cp -r ./docs ./publish/${target}
 
