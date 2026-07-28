@@ -22,6 +22,13 @@ namespace InkLocaliser
             public string file = "";
             // Use ShortIDs?
             public bool shortIDs = false;
+            // If true (the default), a line the localiser cannot handle - one
+            // split into multiple text chunks by inline logic, e.g.
+            // "Test {value} Again" - is a hard error that fails the run. If
+            // false, such lines are warned about and skipped: left untagged in
+            // the Ink and excluded from localisation, so development can carry
+            // on with lines that aren't localisation-ready yet.
+            public bool strict = true;
         }
         private Options _options;
 
@@ -172,6 +179,9 @@ namespace InkLocaliser
             // ---- Find all the things we should localise ----
             List<Text> validTextObjects = new List<Text>();
             int lastLineNumber = -1;
+            // In lenient (non-strict) mode, lines we skip because they're split
+            // by inline logic - so we warn about each only once.
+            HashSet<(string, int)> splitLinesSkipped = new();
             foreach(var text in story.FindAll<Text>())
             {
                 // Just a newline? Ignore.
@@ -198,8 +208,27 @@ namespace InkLocaliser
 
                 // More than one text chunk on a line? We only deal with individual lines of stuff.
                 if (lastLineNumber == text.debugMetadata.startLineNumber) {
-                    Console.Error.WriteLine($"Error in file {fileID} line {lastLineNumber} - two chunks of text when localiser can only work with one per line.");
-                    return false;
+                    if (_options.strict) {
+                        Console.Error.WriteLine($"Error in file {fileID} line {lastLineNumber} - two chunks of text when localiser can only work with one per line.");
+                        return false;
+                    }
+
+                    // Lenient mode: a line split into multiple chunks by inline
+                    // logic (e.g. "Test {value} Again") can't be localised as a
+                    // single string. Warn once, leave it untagged in the Ink,
+                    // and skip the whole line - including the first chunk, which
+                    // we already collected before this second chunk appeared.
+                    if (splitLinesSkipped.Add((fileID, lastLineNumber))) {
+                        Console.Error.WriteLine($"Warning: file {fileID} line {lastLineNumber} - line is split by inline logic and can't be localised; leaving it untagged and skipping it.");
+                        if (validTextObjects.Count > 0) {
+                            var prev = validTextObjects[^1];
+                            if (prev.debugMetadata.startLineNumber == lastLineNumber &&
+                                System.IO.Path.GetFileNameWithoutExtension(prev.debugMetadata.fileName) == fileID) {
+                                validTextObjects.RemoveAt(validTextObjects.Count - 1);
+                            }
+                        }
+                    }
+                    continue;
                 }
                 lastLineNumber = text.debugMetadata.startLineNumber;
 
