@@ -1,0 +1,56 @@
+# Publishes wildwinter.LocaliserLib to nuget.org with Trusted Publishing: no
+# stored API key. GitHub issues a short-lived token, which NuGet/login swaps for
+# an API key that lasts an hour. Needs a Trusted Publishing policy on nuget.org
+# for this repository and this workflow file (publish-nuget.yml).
+#
+# Runs when a version tag (v0.0.4.14, say) is pushed, or by hand from the
+# Actions tab. The version comes from package.json.
+
+name: Publish to NuGet
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # lets GitHub issue the token NuGet/login exchanges
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Read the version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ] && [ "${GITHUB_REF_NAME}" != "v$VERSION" ]; then
+            echo "Tag ${GITHUB_REF_NAME} doesn't match package.json version $VERSION" >&2
+            exit 1
+          fi
+
+      - name: Pack
+        run: dotnet pack LocaliserLib -c Release -p:Version=${{ steps.version.outputs.version }} -o nuget-out
+
+      - name: NuGet login (exchanges the GitHub token for a short-lived API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: wildwinter # nuget.org profile name, not an email address
+
+      - name: Push
+        run: >
+          dotnet nuget push nuget-out/wildwinter.LocaliserLib.${{ steps.version.outputs.version }}.nupkg
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
