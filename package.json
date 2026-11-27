@@ -1,5 +1,5 @@
 {
-  "version": "0.0.4.13",
+  "version": "0.0.4.14",
   "scripts": {
     "sync-version": "node scripts/sync-version.mjs",
     "build": "npm run sync-version && dotnet build",
