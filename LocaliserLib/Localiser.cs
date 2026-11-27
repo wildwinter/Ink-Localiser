@@ -179,6 +179,9 @@ namespace InkLocaliser
             // ---- Find all the things we should localise ----
             List<Text> validTextObjects = new List<Text>();
             int lastLineNumber = -1;
+            // Line numbers repeat across included files, so a chunk only shares
+            // a line with the previous one if it is in the same file too.
+            string? lastFileName = null;
             // In lenient (non-strict) mode, lines we skip because they're split
             // by inline logic - so we warn about each only once.
             HashSet<(string, int)> splitLinesSkipped = new();
@@ -207,7 +210,8 @@ namespace InkLocaliser
                 newFilesVisited.Add(fileID);
 
                 // More than one text chunk on a line? We only deal with individual lines of stuff.
-                if (lastLineNumber == text.debugMetadata.startLineNumber) {
+                if (lastLineNumber == text.debugMetadata.startLineNumber &&
+                    lastFileName == text.debugMetadata.fileName) {
                     if (_options.strict) {
                         Console.Error.WriteLine($"Error in file {fileID} line {lastLineNumber} - two chunks of text when localiser can only work with one per line.");
                         return false;
@@ -231,6 +235,7 @@ namespace InkLocaliser
                     continue;
                 }
                 lastLineNumber = text.debugMetadata.startLineNumber;
+                lastFileName = text.debugMetadata.fileName;
 
                 validTextObjects.Add(text);
             }

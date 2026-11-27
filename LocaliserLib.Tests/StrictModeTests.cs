@@ -66,4 +66,42 @@ public class StrictModeTests
         Assert.True(localiser.Run());
         Assert.Equal(2, File.ReadAllLines(path).Count(l => l.Contains("#id:")));
     }
+
+    // Two included files whose consecutive text chunks happen to share a line
+    // number (zeta line 3, then alpha line 3) are separate lines, not one
+    // split line. The check must compare the file as well as the line number.
+    private static string WriteTwoFileInk()
+    {
+        var dir = TestHelpers.MakeTempDir();
+        File.WriteAllText(Path.Combine(dir, "main.ink"),
+            "INCLUDE zeta.ink\nINCLUDE alpha.ink\n-> Zed\n");
+        File.WriteAllText(Path.Combine(dir, "zeta.ink"),
+            "=== Zed\n\nZed one.\n-> Al\n");
+        File.WriteAllText(Path.Combine(dir, "alpha.ink"),
+            "=== Al\n\nAl one.\nAl two.\n-> DONE\n");
+        return dir;
+    }
+
+    [Fact]
+    public void Strict_SameLineNumberInDifferentFilesIsNotASplitLine()
+    {
+        var dir = WriteTwoFileInk();
+        var localiser = new Localiser(new Localiser.Options { file = Path.Combine(dir, "main.ink"), strict = true });
+
+        Assert.True(localiser.Run());
+        Assert.Contains("#id:", File.ReadAllLines(Path.Combine(dir, "zeta.ink")).Single(l => l.Contains("Zed one.")));
+        Assert.Contains("#id:", File.ReadAllLines(Path.Combine(dir, "alpha.ink")).Single(l => l.Contains("Al one.")));
+    }
+
+    [Fact]
+    public void Lenient_SameLineNumberInDifferentFilesTagsBothLines()
+    {
+        var dir = WriteTwoFileInk();
+        var localiser = new Localiser(new Localiser.Options { file = Path.Combine(dir, "main.ink"), strict = false });
+
+        Assert.True(localiser.Run());
+        Assert.Contains("#id:", File.ReadAllLines(Path.Combine(dir, "zeta.ink")).Single(l => l.Contains("Zed one.")));
+        Assert.Contains("#id:", File.ReadAllLines(Path.Combine(dir, "alpha.ink")).Single(l => l.Contains("Al one.")));
+        Assert.Equal(3, localiser.GetStringKeys().Count);
+    }
 }
